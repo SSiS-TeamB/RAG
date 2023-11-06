@@ -4,9 +4,12 @@ from tqdm.notebook import tqdm
 from prompt_config import prompt_template
 from llama_index.llms import OpenAI
 
-import json
+import os
+import settings
 
-def generate(corpus:dict, dataset_path:str, prompt_template:str=prompt_template, model:str='gpt-3.5-turbo', num_questions_per_chunk:int=2):
+os.environ['OPENAI_API_KEY'] = settings.openai_api_key
+
+def generate_qa(corpus:dict, prompt_template:str=prompt_template, model:str='gpt-3.5-turbo', num_questions_per_chunk:int=2):
     queries={}
     relevant_docs={}
     llm = OpenAI(model)
@@ -34,5 +37,4 @@ def generate(corpus:dict, dataset_path:str, prompt_template:str=prompt_template,
     'relevant_docs': relevant_docs,
     }
     
-    with open(dataset_path, "w+") as file:
-        json.dump(dataset, file)
+    return dataset
