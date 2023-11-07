@@ -32,14 +32,17 @@
 ====================================
 
     231108 03:48
-        수정한 것
-        1. document.py 생성으로 이전에 langchain document list 생성과 corpus.py로 uuid 부여한 corpus 생성 통합해서 object로 생성 완료.
-        2. 해당 사항 이용하는 부분들 통합해서 코드 수정 완료.
+        1. document.py 생성으로 이전에 langchain document list 생성과 corpus.py로 uuid 부여한 corpus 생성 통합해서 object로 생성 완료(document.py)
+        2. 해당 사항 이용하는 부분들 통합해서 코드 수정 완료
+====================================
+
+    231108 08:23
+        1. qa_generation 완성 -> OpenAI api 업데이트로 langchain과 호환 issue 있어
+        추후에 prompt + pydantic 할거면 수정해야 함
+        2. main 파일에 dataset 생성 Example Usage 등록
 
 ----> 할 것
 
 1.HyDE Embedding 붙여서 RAG 구현해놓기
 
-2.langchain generator 완성하기
-
-3.embedding 불러오는 부분도 object화 해서 구현해놓기
+2.embedding 불러오는 부분도 object화 해서 구현해놓기
