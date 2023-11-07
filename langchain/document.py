@@ -8,6 +8,7 @@ from langchain.document_loaders import DirectoryLoader, UnstructuredMarkdownLoad
 from langchain.text_splitter import MarkdownTextSplitter
 
 class BaseDBLoader:
+    """markdownDB folder에서 불러온 다음에 폴더별로 내부에 있는 내용 Load해서 Split하고 저장함"""
     def __init__(self, path_db:str="./markdowndb"):
         #textsplitter config
         self.text_splitter = MarkdownTextSplitter(
@@ -44,7 +45,7 @@ class CorpusDBLoader(BaseDBLoader):
             corpus[str(uuid.uuid4())] = document.page_content
         return corpus
     
-    def generate_corpus(self, corpus:dict={})->dict:
+    def load(self, corpus:dict={})->dict:
         """Generate corpus from langchain document object"""
         list_of_path_db = self.list_of_path_db
         text_splitter = self.text_splitter

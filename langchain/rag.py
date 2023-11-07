@@ -36,14 +36,16 @@ vectorstore = Chroma(persist_directory="./chroma", embedding_function=embedding)
 ############# 일단 OpenAI 오류로 안됨 돌리지마라
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 # llm = GooglePalm(google_api_key=settings.PALM_api_key, temperature=0, max_output_tokens=512)
-llm = OpenAI()
+llm = OpenAI(temperature=1)
 
+#retrieve 방식에 따른 차이 필요(Ensemble, search type 수정 등등)
 #setup chain
 chain = RetrievalQA.from_chain_type(
                     llm=llm,
                     chain_type="stuff",
-                    retriever=vectorstore.as_retriever(),
+                    retriever=vectorstore.as_retriever(search_type='mmr'),
                 )
 
-result = chain.run("40대 주거 욕구")
+####prompt 수정 필요
+result = chain.run("40대 주거 욕구에 대해 말해줘.")
 print(result)
