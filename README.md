@@ -34,12 +34,17 @@ corpus 생성하는 함수(llamaindex 결과랑 같이 맞춰줌) 작성 완료 
 
 indent, 의존관계 등 수정했음(langchain만)
 
+====================================
+
+231108 02:24
+
 ----> 할 것
-
-    1.Chroma 오류 수정하기
     
-    2.HyDE Embedding 붙여서 RAG 구현해놓기
+    1.HyDE Embedding 붙여서 RAG 구현해놓기
 
-    3.langchain generator 완성하기
+    2.langchain generator 완성하기
 
-    (쳐자고 다 하도록)
+    3.쓸데없는 부분 object ㄱㄱ
+
+OpenAI API update로 Langchain dependency 오류 발생해서 RAG baseline 완성했지만 검증은 못해봄(오류 가능성)
+
