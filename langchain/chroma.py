@@ -1,6 +1,6 @@
 import os
 import chromadb
-from langchain.vectorstores import chroma
+from langchain.vectorstores import Chroma
 
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
@@ -8,7 +8,7 @@ from langchain.document_loaders import DirectoryLoader, UnstructuredMarkdownLoad
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
-""" set up vector DB in local path. """
+""" set up vector DB in local path. (./chroma) """
 
 def _device_check() : 
     ''' for check cuda availability '''
@@ -22,20 +22,26 @@ os.chdir(directory)
 
 #embedding config (edit later if domain-adaptation complete.)
 embedding = SentenceTransformerEmbeddings(
-    model_name="BM-K/KoSimCSE-roberta", 
+    model_name="BM-K/KoSimCSE-roberta-multitask", 
     model_kwargs={'device':_device_check()}, 
     encode_kwargs={'normalize_embeddings':True},
     )
 
 #chromadb config
-collection_name = "vector_db"
+# persistent_client = chromadb.PersistentClient()
+# collection_name = "vector_db"
 
-vectorstore = Chroma(
-    client=chromadb.PersistentClient(),
-    collection_name = collection_name,
-    embedding_function = embedding,
-    persist_directory="./chroma",
-)
+# collection = persistent_client.get_or_create_collection(collection_name)
+
+# vectorstore = Chroma(
+#     client=persistent_client,
+#     collection_name = collection_name,
+#     embedding_function = embedding,
+#     persist_directory="./chroma",
+# )
+
+# print("There are", vectorstore._collection.count(), "in the collection.")
+
 
 #textsplitter config
 text_splitter=RecursiveCharacterTextSplitter(
@@ -48,10 +54,17 @@ text_splitter=RecursiveCharacterTextSplitter(
 list_of_path_db = os.listdir("./markdowndb")
 
 result_storage = []
-######## 여기서부터 수정 ㄱㄱ
+
+
+### 여기 document.py 만들면 통일 ㄱㄱ
 for db_folder in list_of_path_db:
     directory_loader = DirectoryLoader(path=os.path.join("./markdowndb", db_folder), loader_cls=UnstructuredMarkdownLoader)
     result=directory_loader.load_and_split(text_splitter=text_splitter)
+    result_storage.extend(result)
 
-vectorstore.from_documents(result_storage)
+
+## chroma setting w.langchain (no parentretriever)
+vectorstore = Chroma.from_documents(result_storage, embedding, persist_directory="./chroma")
 vectorstore.persist()
+
+print("There are", vectorstore._collection.count(), "in the collection.")
