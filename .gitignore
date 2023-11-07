@@ -2,9 +2,15 @@
 llamaindex/settings.py
 langchain/settings.py
 
+langchain/BM-K
+langchain/chroma
+
 ## test file
 langchain/langchaintest.ipynb
 
 ### pycache
 langchain/__pycache__
 llamaindex/__pycache__
+
+#### util
+embedding.py
