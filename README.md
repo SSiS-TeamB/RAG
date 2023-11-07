@@ -2,57 +2,44 @@
 
 ## llamaindex
 
-main.py → 실행(1106 구현)
-
-corpus.py → DB 통해서 dataset 생성에 이용하는 corpus 생성
-
-prompt_config.py → prompt 설정
-
-qa_generation → gpt-3.5-turbo(기본값) 이용해서 dataset 생성 후 json에 넣는 것(json 경로 지정)
-
+    main.py → 실행(1106 구현)
+    corpus.py → DB 통해서 dataset 생성에 이용하는 corpus 생성
+    prompt_config.py → prompt 설정
+    qa_generation → gpt-3.5-turbo(기본값) 이용해서 dataset 생성 후 json에 넣는 것(json 경로 지정)
 ====================================
 
-231106 09:28
-
-api key 삽입(.gitignore)
-
-qa_generation json 생성 부분 main.py로 옮겨서 실행하도록 함
-
+    231106 09:28
+        api key 삽입(.gitignore)
+        qa_generation json 생성 부분 main.py로 옮겨서 실행하도록 함
 ====================================
 
-231107 09:19
-
-langchain version 생성으로 인한 folder 변경 -> 경로문제 해결해야 함(langchain/corpus.py 보고 할 것)
+    231107 09:19
+        langchain version 생성으로 인한 folder 변경 -> 경로문제 해결해야 함
+        (langchain/corpus.py 보고 할 것)
 
 ## langchain
 
-231107 09:19
+    231107 09:19
+        corpus 생성하는 함수(llamaindex 결과랑 같이 맞춰줌) 작성 완료 -> 
+        {uuid:corpus} 형태로 return함
 
-corpus 생성하는 함수(llamaindex 결과랑 같이 맞춰줌) 작성 완료 -> {uuid:corpus} 형태로 return함
-
-231107 12:47
-
-indent, 의존관계 등 수정했음(langchain만)
-
+    231107 12:47
+        indent, 의존관계 등 수정했음(langchain만)
 ====================================
 
-231108 02:24
-
-OpenAI API update로 Langchain dependency 오류 발생해서 RAG baseline 완성했지만 검증은 못해봄(오류 가능성)
-
+    231108 02:24
+        OpenAI API update로 Langchain dependency 오류 발생해서 RAG baseline 완성했지만 검증은 못해봄(오류 가능성)
 ====================================
 
-231108
+    231108 03:48
+        수정한 것
+        1. document.py 생성으로 이전에 langchain document list 생성과 corpus.py로 uuid 부여한 corpus 생성 통합해서 object로 생성 완료.
+        2. 해당 사항 이용하는 부분들 통합해서 코드 수정 완료.
 
-    수정한 것
-    1. document.py 생성으로 이전에 langchain document list 생성과 corpus.py로 uuid 부여한 corpus 생성 통합해서 object로 생성 완료.
+----> 할 것
 
-    2. 해당 사항 이용하는 부분들 통합해서 코드 수정 완료.
+1.HyDE Embedding 붙여서 RAG 구현해놓기
 
-    ----> 할 것
-    
-    1.HyDE Embedding 붙여서 RAG 구현해놓기
+2.langchain generator 완성하기
 
-    2.langchain generator 완성하기
-
-    3.embedding 불러오는 부분도 object화 해서 구현해놓기
+3.embedding 불러오는 부분도 object화 해서 구현해놓기
