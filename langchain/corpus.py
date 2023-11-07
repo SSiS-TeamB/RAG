@@ -4,19 +4,19 @@ from langchain.document_loaders import DirectoryLoader
 from langchain.document_loaders import UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+#TextSplitter config
+text_splitter=RecursiveCharacterTextSplitter(
+    separators="\n\n",
+    chunk_size=200,
+    is_separator_regex=False,
+)
+
 #directoryconfig
 directory = os.path.dirname(__file__)
 os.chdir(directory)
 
 #get list of db
 list_of_path_db = os.listdir("./markdowndb")
-
-#TextSplitter config
-text_splitter = RecursiveCharacterTextSplitter(
-    separators= "\n\n",
-    chunk_size=200,
-    is_separator_regex=False,
-)
 
 def _result_to_corpus(corpus:dict, result:list)->dict:
     """Get langchain Document object and convert to dict form with uuid."""
@@ -32,4 +32,3 @@ def generate_corpus(corpus:dict={})->dict:
         corpus_piece=_result_to_corpus({}, result)
         corpus.update(corpus_piece)
     return corpus
-
