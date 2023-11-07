@@ -4,3 +4,7 @@ langchain/settings.py
 
 ## test file
 langchain/langchaintest.ipynb
+
+### pycache
+langchain/__pycache__
+llamaindex/__pycache__
