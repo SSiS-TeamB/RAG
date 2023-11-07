@@ -29,3 +29,17 @@ langchain version 생성으로 인한 folder 변경 -> 경로문제 해결해야
 231107 09:19
 
 corpus 생성하는 함수(llamaindex 결과랑 같이 맞춰줌) 작성 완료 -> {uuid:corpus} 형태로 return함
+
+231107 12:47
+
+indent, 의존관계 등 수정했음(langchain만)
+
+----> 할 것
+
+    1.Chroma 오류 수정하기
+    
+    2.HyDE Embedding 붙여서 RAG 구현해놓기
+
+    3.langchain generator 완성하기
+
+    (쳐자고 다 하도록)
