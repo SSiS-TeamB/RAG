@@ -38,13 +38,21 @@ indent, 의존관계 등 수정했음(langchain만)
 
 231108 02:24
 
-----> 할 것
+OpenAI API update로 Langchain dependency 오류 발생해서 RAG baseline 완성했지만 검증은 못해봄(오류 가능성)
+
+====================================
+
+231108
+
+    수정한 것
+    1. document.py 생성으로 이전에 langchain document list 생성과 corpus.py로 uuid 부여한 corpus 생성 통합해서 object로 생성 완료.
+
+    2. 해당 사항 이용하는 부분들 통합해서 코드 수정 완료.
+
+    ----> 할 것
     
     1.HyDE Embedding 붙여서 RAG 구현해놓기
 
     2.langchain generator 완성하기
 
-    3.쓸데없는 부분 object ㄱㄱ
-
-OpenAI API update로 Langchain dependency 오류 발생해서 RAG baseline 완성했지만 검증은 못해봄(오류 가능성)
-
+    3.embedding 불러오는 부분도 object화 해서 구현해놓기
