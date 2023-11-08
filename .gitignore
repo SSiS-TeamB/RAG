@@ -1,0 +1,17 @@
+# ignore private settings
+llamaindex/settings.py
+langchain/settings.py
+
+langchain/BM-K
+langchain/chroma
+
+## test file
+langchain/langchaintest.ipynb
+langchain/result.json
+
+### pycache
+langchain/__pycache__
+llamaindex/__pycache__
+
+#### util
+embedding.py
