@@ -18,7 +18,6 @@ def _device_check() :
     device = "cuda" if torch.cuda.is_available() else "cpu"
     return device
 
-
 embedding = SentenceTransformerEmbeddings(
     model_name="BM-K/KoSimCSE-roberta-multitask", 
     model_kwargs={'device':_device_check()}, 
