@@ -7,83 +7,65 @@ import re
 
 from langchain.document_loaders import DirectoryLoader, UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.schema.document import Document
 
 class BaseDBLoader:
     """markdownDB folder에서 불러온 다음에 폴더별로 내부에 있는 내용 Load해서 Split하고 저장함"""
-    def __init__(self, loader_cls=UnstructuredMarkdownLoader, path_db:str="./markdowndb",):
-        #textsplitter config
+
+    def __init__(self, loader_cls=UnstructuredMarkdownLoader, path_db: str = "./markdowndb", ):
+        # textsplitter config
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=200,
             is_separator_regex=False,
         )
-        #directory config
+        
+        #필요한 이유 -> llamaindex와 같이 폴더가 나누어져 있는 경우 경로 잡을 때 오류 발생할 가능성 줄이려고.
         self.directory = os.path.dirname(__file__)
         os.chdir(self.directory)
-        #get list of db
-        self.path_db = path_db
-        self.list_of_path_db = os.listdir(path_db)
-        #loaderclass config
+
+        # loaderclass config
         self.loader_cls = loader_cls
+        # md 파일 담고 있는 전체 directory 경로
+        self.path_db = path_db
+        # storage
+        self.storage = []
 
-    def load(self)->list:
-        """Generate corpus from langchain document object"""
-        list_of_path_db=self.list_of_path_db
-        text_splitter=self.text_splitter
-        loader_cls = self.loader_cls
+        return
 
-        result_storage = []
+    def load(self, is_split=True, is_regex=False) -> list[Document]:
+        """Generate corpus from langchain document objects"""
+        for db_folder in os.listdir(self.path_db):
+            db_folder_abs = os.path.join(self.path_db, db_folder)
+            directory_loader = DirectoryLoader(path=db_folder_abs, loader_cls=self.loader_cls)
 
-        for db_folder in list_of_path_db:
-            directory_loader = DirectoryLoader(path=os.path.join(self.path_db, db_folder), loader_cls=loader_cls)
-            result = directory_loader.load_and_split(text_splitter=text_splitter)
-            result_storage.extend(result)     
+            if is_split:
+                result = directory_loader.load_and_split(text_splitter=self.text_splitter)
+            else:
+                result = directory_loader.load()
 
-        return result_storage
+            self.storage.extend(result)
+        #정규식 여부에 따라서 storage 변경
+        if is_regex:
+            self.storage = self._result_to_regex()
 
-class RegExDBLodaer(BaseDBLoader):
-    """ Inherite BaseDB and add RegEx to get preprocessed DB. """
-    def _result_to_regex(self, storage:list, regex:str, result:list)->list:
-        storage = []
-        for document in result :
-            sub = re.sub(pattern=regex, repl="", string=document.page_content)
-            document.page_content = sub
-            storage.append(document)
-        return storage
-
-    def load(self)->list:
-        """Generate corpus from langchain document object -> add re.sub() and Not split
-            NOT USE text_splitter. only chunk whole .md file. """
-        list_of_path_db = self.list_of_path_db
-        loader_cls = self.loader_cls
-
-        result_storage = []
+        return self.storage
+    
+    def _result_to_regex(self) -> list:
         regex = '([^가-힣0-9a-zA-Z.,·•%↓()\s\\\])'
 
-        for db_folder in list_of_path_db:
-            directory_loader = DirectoryLoader(path=os.path.join(self.path_db, db_folder), loader_cls=loader_cls)
-            result = directory_loader.load()
-            
-            result_sub = self._result_to_regex(storage=[], regex=regex, result=result)
-            result_storage.extend(result_sub)
+        result = []
+        for document in self.storage:
+            sub_str = re.sub(pattern=regex, repl="", string=document.page_content)
+            document.page_content = sub_str
+            result.append(document)
 
-        return result_storage
+        self.storage = result
 
-class CorpusDBLoader(BaseDBLoader):
-    def _result_to_corpus(self, corpus:dict, result:list)->dict:
-        """Get langchain Document object and convert to dict form with uuid."""
-        for document in result:
-            corpus[str(uuid.uuid4())] = document.page_content
-        return corpus
-    
-    def load(self, corpus:dict={})->dict:
-        """Generate corpus from langchain document object"""
-        list_of_path_db = self.list_of_path_db
-        text_splitter = self.text_splitter
-        loader_cls = self.loader_cls
+        return self.storage
 
-        for db_folder in list_of_path_db:
-            directory_loader =  DirectoryLoader(path=os.path.join("./markdowndb", db_folder), loader_cls=loader_cls)
-            result = directory_loader.load_and_split(text_splitter=text_splitter)
-            corpus_piece = self._result_to_corpus({}, result)
-            corpus.update(corpus_piece)
-        return corpus
+    def get_corpus(self) -> dict:
+        "self.storage가 존재한다면 dict로 결과 return함"
+        if not self.storage :
+            raise ValueError("loader에 storage가 생성되지 않았습니다. load 함수를 실행하거나 storage를 확인하고 다시 실행하세요.")
+        
+        return {str(uuid.uuid4()): doc.page_content for doc in self.storage}
