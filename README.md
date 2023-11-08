@@ -40,6 +40,10 @@
         1. qa_generation 완성 -> OpenAI api 업데이트로 langchain과 호환 issue 있어
         추후에 prompt + pydantic 할거면 수정해야 함
         2. main 파일에 dataset 생성 Example Usage 등록
+====================================
+
+    231108 13:21
+        1.document.py에 RegExLoader Class 추가(원문에서 정규식으로 .md file의 table 텍스트 부분)
 
 ----> 할 것
 
