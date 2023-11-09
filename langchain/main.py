@@ -1,6 +1,7 @@
 """ Dataset generation Example usage """
 
 from document import BaseDBLoader
+<<<<<<< HEAD
 # from qa_generation import generate_qa
 # from prompt import prompt_template
 
@@ -16,6 +17,19 @@ for e in corpus1:
     if idx > 3:
         break
     idx += 1
+=======
+from qa_generation import generate_qa 
+from prompt import prompt_template
+
+
+## corpus 생성까지
+loader = BaseDBLoader()
+
+document = loader.load(is_regex=True, is_split=True)
+# print(document)
+corpus = loader.get_corpus()
+print(corpus)
+>>>>>>> origin/joonho
 
 idx = 0
 for e in corpus2:
@@ -28,5 +42,4 @@ for e in corpus2:
 
 print(len(corpus1), len(corpus2))
 # dataset = generate_qa(corpus=corpus, prompt_template=prompt_template, model="gpt-3.5-turbo-1106", num_questions_per_chunk=3)
-
 # print(dataset)
