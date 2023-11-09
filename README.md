@@ -49,11 +49,21 @@
 ====================================
 
     231109 08:38
-        1.document Class BaseDBLoader로 통합하고 flag를 통해서 정규식, split 해결하도록 했다 (special thanks to khakha👍)
+        1.document Class BaseDBLoader로 통합하고 flag를 통해서 정규식, split 해결하도록 함 
+            -> loader 메서드에 넣음
+            (special thanks to khakha👍)
         2.main에 사용예시 변경
 
 ----> 할 것
 
-1.HyDE Embedding 붙여서 RAG 구현해놓기
+1. HyDE Embedding 붙여서 RAG 구현해놓기
 
-2.embedding 불러오는 부분도 object화 해서 구현해놓기
+2. ORPO, Analogical Prompting
+
+3. embedding 불러오는 부분도 object화 해서 구현해놓기
+
+----> 장기적으로..
+
+1. RAG 고도화
+2. 어떻게 보여줄 것인가?
+
