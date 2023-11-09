@@ -56,13 +56,6 @@ class BaseDBLoader:
         self.directory = os.path.dirname(__file__)
         os.chdir(self.directory)
 
-        # loaderclass config
-        self.loader_cls = loader_cls
-        # md 파일 담고 있는 전체 directory 경로
-        self.path_db = path_db
-        # storage
-        self.storage = []
-
         return
 
     def load(self, is_split=True, is_regex=False) -> list[Document]:
