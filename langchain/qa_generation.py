@@ -19,10 +19,15 @@ def _write_dataset(node_id: str, questions: list, queries: dict, relevant_docs: 
 
         queries[question_id] = question
         relevant_docs[question_id] = [node_id]
+<<<<<<< HEAD
     return
 
 
 def generate_qa(corpus:dict, prompt_template:str=prompt_template, model:str="gpt-3.5-turbo-1106", num_questions_per_chunk:int=2):
+=======
+    
+def generate_qa(corpus:dict, prompt_template:str=prompt_template, model:str="gpt-3.5-turbo-1106", num_questions_per_chunk:int=2)->dict:
+>>>>>>> 60d4caaca32d5be3632e7ca18a91181d02bed710
     dataset = {}
     queries = {}
     relevant_docs = {}
