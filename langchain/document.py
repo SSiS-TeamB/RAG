@@ -45,9 +45,9 @@ class BaseDBLoader:
             result_storage.extend(result)
 
         if is_regex:
-            result_storage = result_to_regex(result_storage)
+            result_storage = self._result_to_regex(result_storage)
         
-        return
+        return result_storage
 
     def _result_to_regex(self) -> list:
         regex = '([^가-힣0-9a-zA-Z.,·•%↓()\s\\\])'

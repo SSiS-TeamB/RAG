@@ -26,8 +26,10 @@ embedding = SentenceTransformerEmbeddings(
 
 #dbsetup
 result_storage = BaseDBLoader().load()
+# print(result_storage)
 
 ## chroma setting w.langchain (no parentretriever)
 vectorstore = Chroma.from_documents(result_storage, embedding, persist_directory="./chroma")
 vectorstore.persist()
 print("There are", vectorstore._collection.count(), "in the collection.")
+
