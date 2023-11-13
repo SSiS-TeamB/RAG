@@ -4,10 +4,12 @@ langchain/settings.py
 
 langchain/BM-K
 langchain/chroma
+.ipynb_checkpoints
 
 ## test file
 langchain/langchaintest.ipynb
 langchain/result.json
+Test.ipynb
 
 ### pycache
 langchain/__pycache__
