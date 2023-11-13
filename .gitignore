@@ -1,9 +1,7 @@
 # ignore private settings
-llamaindex/settings.py
-langchain/settings.py
+workspace/settings.py
 
-langchain/BM-K
-langchain/chroma
+workspace/BM-K
 .ipynb_checkpoints
 
 ## test file
@@ -12,8 +10,9 @@ langchain/result.json
 Test.ipynb
 
 ### pycache
-langchain/__pycache__
-llamaindex/__pycache__
+workspace/__pycache__
+workspace/markdownDB
+
 
 #### util
 embedding.py
