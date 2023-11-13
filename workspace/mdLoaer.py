@@ -32,7 +32,7 @@ class BaseDBLoader:
         self.storage = []
         return
 
-    def load(self, is_split=True, is_regex=False) -> list[Document]:
+    def load(self, is_split=True, is_regex=True) -> list[Document]:
         """Generate corpus from langchain document objects"""
 
         result_storage = []
