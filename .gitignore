@@ -1,6 +1,8 @@
 # ignore private settings
 workspace/settings.py
 
+BM-K
+chroma_storage
 workspace/BM-K
 .ipynb_checkpoints
 
