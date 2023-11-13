@@ -10,7 +10,7 @@ class CromaClient:
 
         self.collections = self.client.list_collections()
         self.collection = None
-        pass
+        return
 
     # $$$ get_or_create_collection 로 바꿔도 무방
     def make_collection(self, coll_name, emb_func:SEF, meta_dict={"hnsw:space": "cosine"}):
@@ -39,3 +39,11 @@ class CromaClient:
     def reset_client(self):
         self.client.reset()
         return
+    pass
+
+
+"""
+참조 링크
+https://webcache.googleusercontent.com/search?q=cache:https://medium.com/@kbdhunga/an-overview-of-chromadb-the-vector-database-206437541bdd
+
+"""
