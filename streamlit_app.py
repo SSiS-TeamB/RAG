@@ -1,6 +1,9 @@
 import streamlit as st
 import time
 from PIL import Image
+
+from chromaClient import ChromaClient
+from chromadb.utils import embedding_functions
 # import pandas as pd
 # import numpy as np
 # from tkinter.tix import COLUMN
@@ -57,9 +60,6 @@ with con4:
         st.markdown("<h2 style='text-align: center; color: black;'>검색 결과</h2>", unsafe_allow_html=True)
 
         # vector DB Load
-        from chromaClient import ChromaClient
-        from chromadb.utils import embedding_functions
-
         chroma_client = ChromaClient()
 
         # semantic_search
