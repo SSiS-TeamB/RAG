@@ -1,9 +1,10 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 import time
-from tkinter.tix import COLUMN
-from pyparsing import empty
+from PIL import Image
+# import pandas as pd
+# import numpy as np
+# from tkinter.tix import COLUMN
+# from pyparsing import empty
 
 
 st.set_page_config(layout='wide')
@@ -29,7 +30,6 @@ with con1:
     st.markdown("<p style='text-align: right; color: gray;'>무엇이든 물어보세요</p>", unsafe_allow_html=True)
 #    st.header("Header")
 #    st.subheader('-'*60)
-#    st.header("A cat")
 #    st.image("https://static.streamlit.io/examples/cat.jpg", use_column_width=True)
 
 with con2:
@@ -38,7 +38,6 @@ with con2:
 
 
 with con3:
-    # st.header("Chart Data")
     btn_flag = st.button("click")
     # chart_data = pd.DataFrame(np.random.randn(50, 3), columns=["a", "b", "c"])
     # st.bar_chart(chart_data)
