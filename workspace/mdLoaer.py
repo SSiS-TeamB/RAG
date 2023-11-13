@@ -28,6 +28,8 @@ class BaseDBLoader:
         self.loader_cls = loader_cls
         # md 파일 담고 있는 전체 디렉터리 경로
         self.path_db = path_db
+        # storage
+        self.storage = []
         return
 
     def load(self, is_split=True, is_regex=False) -> list[Document]:
@@ -45,9 +47,9 @@ class BaseDBLoader:
             result_storage.extend(result)
 
         if is_regex:
-            result_storage = self._result_to_regex(result_storage)
+            self._result_to_regex(result_storage)
         
-        return result_storage
+        return self.storage
 
     def _result_to_regex(self) -> list:
         regex = '([^가-힣0-9a-zA-Z.,·•%↓()\s\\\])'
@@ -59,8 +61,7 @@ class BaseDBLoader:
             result.append(document)
 
         self.storage = result
-
-        return self.storage
+        return 
 
     def get_corpus(self) -> dict:
         "self.storage가 존재한다면 dict로 결과 return함"
