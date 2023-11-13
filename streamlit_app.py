@@ -10,6 +10,7 @@ st.set_page_config(layout='wide')
 # add_selectbox = st.sidebar.selectbox("왼쪽 사이드바 Select Box", ("A", "B", "C"))
 
 # 레이아웃
+backgroundColor = "#F0F0F0"
 empty1, con1, empty2 = st.columns([0.3, 1.0, 0.3])
 empty1, con2, con3, empty2 = st.columns([0.3, 0.8, 0.2, 0.3])
 empty1, con4, empty2 = st.columns([0.3, 1.0, 0.3])
@@ -18,11 +19,14 @@ empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
 
 with con1:
-   st.markdown("<h1 style='text-align: center; color: black;'>검색 엔진 시스템</h1>", unsafe_allow_html=True)
-#    st.subheader("무엇이든 물어보세요!!!")
-   st.markdown("<p style='text-align: right; color: black;'>무엇이든 물어보세요</p>", unsafe_allow_html=True)
-
-
+    st.markdown("<h1 style='text-align: center; color: gray;'>검색 엔진 시스템</h1>", unsafe_allow_html=True)
+    img_ssis = Image.open('ssis_logo.png')
+    img_BL = Image.open('bigleader_logo.png')
+    empty1,col3, col2, col1 = st.columns([3,0.8, 0.1, 1.2])
+    col1.image(img_ssis, use_column_width=True)
+    col2.empty()
+    col3.image(img_BL, use_column_width=True)
+    st.markdown("<p style='text-align: right; color: gray;'>무엇이든 물어보세요</p>", unsafe_allow_html=True)
 #    st.header("Header")
 #    st.subheader('-'*60)
 #    st.header("A cat")

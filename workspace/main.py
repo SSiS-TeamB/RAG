@@ -1,6 +1,6 @@
 """ Dataset generation Example usage """
 
-from document import BaseDBLoader
+from mdLoaer import BaseDBLoader
 # from qa_generation import generate_qa
 # from prompt import prompt_template
 
