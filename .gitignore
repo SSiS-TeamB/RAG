@@ -8,8 +8,10 @@ workspace/BM-K
 
 ## test file
 Test.ipynb
+dbtest.ipynb
 
 ### pycache
+__pycache__
 workspace/__pycache__
 workspace/markdownDB
 

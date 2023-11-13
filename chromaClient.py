@@ -3,7 +3,7 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 from chromadb.config import Settings
 
 
-class CromaClient:
+class ChromaClient:
 
     def __init__(self, store_dir="chroma_storage") -> None:
         self.client = chromadb.PersistentClient(path=store_dir, settings=Settings(allow_reset=True))
@@ -19,7 +19,7 @@ class CromaClient:
         else:
             self.client.create_collection(name=coll_name, metadata=meta_dict)
         return
-    def get_collection(self, coll_name, emb_func:SEF):
+    def connect_collection(self, coll_name, emb_func:SEF):
         if emb_func:
             self.collection = self.client.get_collection(name=coll_name, embedding_function=emb_func)
         else:
@@ -36,6 +36,7 @@ class CromaClient:
     def semantic_search(self, q_list:list, k:int = 5) -> dict:
         return self.collection.query(query_texts=q_list, n_results=k)
 
+    # $$$ 리셋하면 다 지워지는 건지, 확인 후 수정하기!
     def reset_client(self):
         self.client.reset()
         return

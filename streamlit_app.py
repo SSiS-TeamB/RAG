@@ -21,8 +21,8 @@ empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
 with con1:
     st.markdown("<h1 style='text-align: center; color: gray;'>검색 엔진 시스템</h1>", unsafe_allow_html=True)
-    img_ssis = Image.open('ssis_logo.png')
-    img_BL = Image.open('bigleader_logo.png')
+    img_ssis = Image.open('image/ssis_logo.png')
+    img_BL = Image.open('image/bigleader_logo.png')
     empty1,col3, col2, col1 = st.columns([3,0.8, 0.1, 1.2])
     col1.image(img_ssis, use_column_width=True)
     col2.empty()
@@ -56,6 +56,17 @@ with con4:
         # st.subheader('검색 결과')
         st.markdown("<h2 style='text-align: center; color: black;'>검색 결과</h2>", unsafe_allow_html=True)
 
-# vector DB Load
+        # vector DB Load
+        from chromaClient import ChromaClient
+        from chromadb.utils import embedding_functions
 
+        chroma_client = ChromaClient()
 
+        # semantic_search
+        base_model = "BM-K/KoSimCSE-roberta-multitask"
+        emb_func = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=base_model, normalize_embeddings=True)
+        chroma_client.connect_collection('wf_schema', emb_func=emb_func)
+        results = chroma_client.semantic_search([query_text], 3)
+
+        st.write(results)
+    pass
