@@ -5,8 +5,6 @@ workspace/BM-K
 .ipynb_checkpoints
 
 ## test file
-langchain/langchaintest.ipynb
-langchain/result.json
 Test.ipynb
 
 ### pycache
