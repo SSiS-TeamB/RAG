@@ -1,6 +1,6 @@
 import os
 from document import BaseDBLoader
-
+import torch
 from langchain.vectorstores import Chroma
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
@@ -12,10 +12,11 @@ os.chdir(directory)
 
 #embedding config (edit later if domain-adaptation complete.)
 
-def _device_check() : 
+def _device_check():
     ''' for check cuda availability '''
-    import torch
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.cuda.is_available() : device ="cuda"
+    elif torch.backends.mps.is_available() : device = "mps"
+    else : device = "cpu"
     return device
 
 embedding = SentenceTransformerEmbeddings(

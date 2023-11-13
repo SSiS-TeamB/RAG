@@ -32,7 +32,7 @@ class BaseDBLoader:
 
         return
 
-    def load(self, is_split=True, is_regex=False) -> list[Document]:
+    def load(self, is_split=True, is_regex=True) -> list[Document]:
         """Generate corpus from langchain document objects"""
         for db_folder in os.listdir(self.path_db):
             db_folder_abs = os.path.join(self.path_db, db_folder)
