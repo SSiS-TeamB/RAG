@@ -2,7 +2,6 @@ from langchain.vectorstores import Chroma
 
 
 class ChromaVectorStore:
-    # $$$ kwargs로 바꿔야 함
     def __init__(self, **kwargs) -> None:
         
         self.vs = Chroma(**kwargs)

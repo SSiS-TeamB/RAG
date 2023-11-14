@@ -45,6 +45,21 @@ with con2:
     query_text = st.text_input('검색하셈', label_visibility='collapsed')
     # query_text = st.text_area("이건 여러줄 입력")
 
+# vector DB Load
+chroma_client = ChromaClient()
+base_model = "BM-K/KoSimCSE-roberta-multitask"
+
+# Settings for semantic_search using "chromadb" module
+emb_func = STEF(model_name=base_model, normalize_embeddings=True)
+chroma_client.connect_collection('wf_schema', emb_func=emb_func)
+
+# Settings for semantic_search using vectorstores of langchain
+emb_info_dict = {'model_name': base_model, 'model_kwargs': {'device': "cuda" if torch.cuda.is_available() else "cpu"},
+'encode_kwargs': {'normalize_embeddings': True}}
+emb = STE(**emb_info_dict)
+vs_info_dict = {'collection_name': 'wf_schema', 'persist_directory': './chroma_storage', 'embedding_function': emb}
+vector_store = ChromaVectorStore(**vs_info_dict)
+
 
 with con3:
     btn_flag = st.button("click")
@@ -52,9 +67,6 @@ with con3:
     # st.bar_chart(chart_data)
     # st.write("Write Something")
 
-# vector DB Load
-chroma_client = ChromaClient()
-base_model = "BM-K/KoSimCSE-roberta-multitask"
 
 if query_text or btn_flag:
     with con4:
@@ -70,16 +82,9 @@ if query_text or btn_flag:
         st.markdown("<h2 style='text-align: center; color: black;'>검색 결과</h2>", unsafe_allow_html=True)
 
     # semantic_search using "chromadb" module
-    emb_func = STEF(model_name=base_model, normalize_embeddings=True)
-    chroma_client.connect_collection('wf_schema', emb_func=emb_func)
     results = chroma_client.semantic_search([query_text], 3)
 
     # semantic_search using vectorstores of langchain
-    emb_info_dict = {'model_name': base_model, 'model_kwargs': {'device': "cuda" if torch.cuda.is_available() else "cpu"},
-'encode_kwargs': {'normalize_embeddings': True}}
-    emb = STE(**emb_info_dict)
-    vs_info_dict = {'collection_name': 'wf_schema', 'persist_directory': './chroma_storage', 'embedding_function': emb}
-    vector_store = ChromaVectorStore(**vs_info_dict)
     results_vs = vector_store.retrieve(query_text)
 
     with con5:
