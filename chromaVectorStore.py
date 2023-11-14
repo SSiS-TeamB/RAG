@@ -1,6 +1,7 @@
 import os
 from workspace.mdLoader import BaseDBLoader #workspace/mdLoader
-
+## ^*^ 1114 _device_check를 새로 만들었어요.
+from workspace.Device import _device_check
 from langchain.vectorstores.chroma import Chroma
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
@@ -11,12 +12,6 @@ import pickle
 #directory settings
 directory = os.path.dirname(__file__)
 os.chdir(directory)
-
-def _device_check() : 
-    ''' for check cuda availability '''
-    import torch
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    return device
 
 #embedding config
 embedding = SentenceTransformerEmbeddings(
