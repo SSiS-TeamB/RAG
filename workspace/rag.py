@@ -1,8 +1,3 @@
-""" 수정 필요한 부분 -> 
-pickle 불러오는 것 (document)
-db path에 맞도록 수정
-"""
-
 import os
 
 from langchain.vectorstores.chroma import Chroma
@@ -18,13 +13,12 @@ from langchain.chains import RetrievalQA, HypotheticalDocumentEmbedder
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
-from device_check import device_check
+from workspace.device_check import device_check
 
 import pickle
 
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
-#path 설정 임시(231114)
 directory = os.path.dirname(__file__)
 os.chdir(directory)
 
@@ -39,15 +33,19 @@ embedding = SentenceTransformerEmbeddings(
     )
 
 ## embedding config - HyDE
-prompt_template = """ 
-당신은 대한민국의 복지제도 전문가입니다. 복지 제도를 기반으로, 주어진 #질문에 #답변하면 됩니다.
+hyde_prompt_template = """ 
+    Write a passage in Korean to answer the #question in detail.
 
-#질문 : {question}
-#답변 : ... 
+    #question : {question}
+    #passage : ...
+
 """
 
-prompt = PromptTemplate(input_variables=["question"], template=prompt_template)
-llm_chain = LLMChain(llm=llm, prompt=prompt)
+hyde_prompt_complete = PromptTemplate(input_variables=["question"], template= hyde_prompt_template)
+llm_chain = LLMChain(
+    llm=llm, 
+    prompt=hyde_prompt_complete,
+)
 
 HyDEembeddings = HypotheticalDocumentEmbedder(
     llm_chain=llm_chain,
@@ -57,8 +55,7 @@ HyDEembeddings = HypotheticalDocumentEmbedder(
 #get vectorstore *HyDE Embedding
 vectorstore = Chroma(collection_name="vector_db", persist_directory="./chroma_storage", embedding_function=HyDEembeddings)
 
-# print(vectorstore.similarity_search("국가장학금", k=3,))
-
+#### pickle 받도록 수정해야 함..
 #get document from pickle(use as documents in bm25_retriever)
 with open('./document.pkl', 'rb') as file :
     documents = pickle.load(file)
@@ -79,9 +76,8 @@ chain = RetrievalQA.from_chain_type(
                     chain_type="stuff",
                     retriever=ensemble_retriever,)
 
-
-#### prompt 수정 필요
-result = chain.run("40대 주거 욕구에 대해 말해줘.")
+#### 실행단 부분 수정 필요.
+result = chain.run("당신은 한국의 복지 전문가입니다. 주어진 정보만을 가지고, 다음의 질문에 대답하면 됩니다. 질문 : 농촌 풍수해 피해의 경우 보상받을 수 있는 방법은? 답변 : ... ")
 print(result)
 
 

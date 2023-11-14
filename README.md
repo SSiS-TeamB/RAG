@@ -9,3 +9,6 @@
     5. chromaClient.py line 30~33에 의견 주석 달았음
 
     -> 일단 이 구조로 가는거고 추후에 통합사항 더 논의해서 바꾸면 될 듯
+
+#### 
+    1. workspace/analogicalPrompt.py 작성 -> RAG generator Prompt
