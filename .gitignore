@@ -2,4 +2,12 @@
 workspace/settings.py
 
 ### model
-da_finetune_epoch_2
+workspace/da_finetune_epoch_2
+
+### __pycache__
+workspace/__pycache__
+
+### chromastorage
+workspace/chroma_storage
+### document pickle file
+workspace/document.pkl

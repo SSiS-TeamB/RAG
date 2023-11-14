@@ -13,21 +13,23 @@ from langchain.chains import RetrievalQA, HypotheticalDocumentEmbedder
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
-from workspace.device_check import device_check
-
 import pickle
+
+from device_check import device_check
+from analogicalPrompt import generator_prompt
 
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
+#directory settings
 directory = os.path.dirname(__file__)
 os.chdir(directory)
 
 #llm
-llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=1)
+llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0)
 
 #embedding config
 embedding = SentenceTransformerEmbeddings(
-    model_name="da_finetune_epoch_2", 
+    model_name="./da_finetune_epoch_2", 
     model_kwargs={'device':device_check()}, 
     encode_kwargs={'normalize_embeddings':True},
     )
@@ -74,12 +76,12 @@ ensemble_retriever = EnsembleRetriever(retrievers=[bm25_retriever, chroma_retrie
 chain = RetrievalQA.from_chain_type(
                     llm=llm,
                     chain_type="stuff",
-                    retriever=ensemble_retriever,)
+                    retriever=ensemble_retriever,
+                    chain_type_kwargs={"prompt":generator_prompt()})
 
-#### 실행단 부분 수정 필요.
-result = chain.run("당신은 한국의 복지 전문가입니다. 주어진 정보만을 가지고, 다음의 질문에 대답하면 됩니다. 질문 : 농촌 풍수해 피해의 경우 보상받을 수 있는 방법은? 답변 : ... ")
-print(result)
-
+##### 예시
+response = chain.run("어민 풍수해 피해에 따른 보험금 산정은 어떻게 이루어져?")
+print(response)
 
 """ ref
 https://python.langchain.com/docs/use_cases/question_answering/vector_db_qa

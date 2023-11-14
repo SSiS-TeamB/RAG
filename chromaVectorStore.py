@@ -1,6 +1,6 @@
 import os
 from workspace.mdLoader import BaseDBLoader #workspace/mdLoader
-## ^*^ 1114 _device_check를 새로 만들었어요.
+## ^*^ 1114 device_check를 새로 만들었어요
 from workspace.device_check import device_check
 from langchain.vectorstores.chroma import Chroma
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
