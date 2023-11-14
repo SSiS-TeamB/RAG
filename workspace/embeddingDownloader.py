@@ -34,7 +34,7 @@ from sentence_transformers import SentenceTransformer
 #     loader = EmbeddingDownLoader(model="BM-K/KoSimCSE-roberta-multitask")
 #     loader.download()
 
-def s_bert_embedding_donwloader(model_name, save_path):
+def s_bert_embedding_downloader(model_name, save_path):
     s_transformer = SentenceTransformer(model_name_or_path=model_name)
 
     dir_path = os.path.join(save_path, model_name)
