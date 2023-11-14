@@ -8,7 +8,7 @@ class ChromaClient:
     def __init__(self, store_dir="chroma_storage") -> None:
         self.client = chromadb.PersistentClient(path=store_dir, settings=Settings(allow_reset=True))
 
-        self.collections = self.client.list_collections()
+        self.collection_list = self.client.list_collections()
         self.collection = None
         return
 

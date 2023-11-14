@@ -13,7 +13,7 @@ from langchain.schema.document import Document
 class BaseDBLoader:
     """markdownDB folder에서 불러온 다음에 폴더별로 내부에 있는 내용 Load해서 Split하고 저장함"""
 
-    def __init__(self, loader_cls=UnstructuredMarkdownLoader, path_db: str = "./markdowndb", ):
+    def __init__(self, loader_cls=UnstructuredMarkdownLoader, path_db:str = "./markdowndb", ):
         # textsplitter config
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=200,
