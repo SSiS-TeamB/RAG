@@ -1,5 +1,5 @@
 import os
-from mdLoaer import BaseDBLoader
+from mdLoader import BaseDBLoader
 
 from langchain.vectorstores import Chroma
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
