@@ -1,5 +1,7 @@
 # 의견 Note
 
+## 명준 git push test  변경내용
+
 ## 231114
 #### 송준호 : 가재준씨 통합으로 만들어서 main에 올렸습니다   
     1. workspace/main.py 삭제(QAgen에 사용하는거라 삭제했음)   
