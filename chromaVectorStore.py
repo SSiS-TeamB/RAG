@@ -21,7 +21,7 @@ embedding = SentenceTransformerEmbeddings(
     )
 
 #dbsetup
-result_storage = BaseDBLoader().load(is_split=False, is_regex=True)
+result_storage = BaseDBLoader().load(is_split=True, is_regex=True)
 
 ## pickle로 Document 따로 저장(일단 수정 안하고 임시로 저장함)
 with open('./document.pkl', 'wb') as file :
