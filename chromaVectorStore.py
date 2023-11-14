@@ -1,6 +1,6 @@
 from langchain.vectorstores import Chroma
 
 
-class ChromaVectorStores:
+class ChromaVectorStore:
     def __init__(self) -> None:
         pass
