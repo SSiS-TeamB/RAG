@@ -38,7 +38,6 @@ with con1:
     col3.image(img_BL, use_column_width=True)
     st.markdown("<p style='text-align: right; color: gray;'>무엇이든 물어보세요</p>", unsafe_allow_html=True)
 #    st.header("Header")
-#    st.subheader('-'*60)
 #    st.image("https://static.streamlit.io/examples/cat.jpg", use_column_width=True)
 
 with con2:
