@@ -3,7 +3,13 @@ import time
 from PIL import Image
 
 from chromaClient import ChromaClient
-from chromadb.utils import embedding_functions
+from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction as STEF
+
+# from langchain.vectorstores.chroma import Chroma
+from chromaVectorStore import ChromaVectorStore
+from langchain.embeddings import SentenceTransformerEmbeddings as STE
+import torch
+
 # import pandas as pd
 # import numpy as np
 # from tkinter.tix import COLUMN
@@ -46,8 +52,12 @@ with con3:
     # st.bar_chart(chart_data)
     # st.write("Write Something")
 
-with con4:
-    if query_text or btn_flag:
+# vector DB Load
+chroma_client = ChromaClient()
+base_model = "BM-K/KoSimCSE-roberta-multitask"
+
+if query_text or btn_flag:
+    with con4:
         progress_text = f'Finding about "{query_text}"...'
         my_bar = st.progress(0, text=progress_text)
 
@@ -59,14 +69,23 @@ with con4:
         # st.subheader('검색 결과')
         st.markdown("<h2 style='text-align: center; color: black;'>검색 결과</h2>", unsafe_allow_html=True)
 
-        # vector DB Load
-        chroma_client = ChromaClient()
+    # semantic_search using "chromadb" module
+    emb_func = STEF(model_name=base_model, normalize_embeddings=True)
+    chroma_client.connect_collection('wf_schema', emb_func=emb_func)
+    results = chroma_client.semantic_search([query_text], 3)
 
-        # semantic_search
-        base_model = "BM-K/KoSimCSE-roberta-multitask"
-        emb_func = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=base_model, normalize_embeddings=True)
-        chroma_client.connect_collection('wf_schema', emb_func=emb_func)
-        results = chroma_client.semantic_search([query_text], 3)
+    # semantic_search using vectorstores of langchain
+    emb_info_dict = {'model_name': base_model, 'model_kwargs': {'device': "cuda" if torch.cuda.is_available() else "cpu"},
+'encode_kwargs': {'normalize_embeddings': True}}
+    emb = STE(**emb_info_dict)
+    vs_info_dict = {'collection_name': 'wf_schema', 'persist_directory': './chroma_storage', 'embedding_function': emb}
+    vector_store = ChromaVectorStore(**vs_info_dict)
+    results_vs = vector_store.retrieve(query_text)
 
+    with con5:
         st.write(results)
-    pass
+
+    with con6:
+        st.write(results_vs)
+
+

@@ -42,7 +42,6 @@ class BaseDBLoader:
                 result = directory_loader.load_and_split(text_splitter=self.text_splitter)
             else:
                 result = directory_loader.load()
-
             self.storage.extend(result)
 
         if is_regex:

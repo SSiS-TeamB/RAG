@@ -3,8 +3,8 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 from chromadb.config import Settings
 
 
-class ChromaClient:
 
+class ChromaClient:
     def __init__(self, store_dir="chroma_storage") -> None:
         self.client = chromadb.PersistentClient(path=store_dir, settings=Settings(allow_reset=True))
 
