@@ -35,7 +35,6 @@ class BaseDBLoader:
     def load(self, is_split=True, is_regex=True) -> list[Document]:
         """Generate corpus from langchain document objects"""
 
-        result_storage = []
         for db_folder in os.listdir(self.path_db):
             db_folder_abs = os.path.join(self.path_db, db_folder)
             directory_loader = DirectoryLoader(path=db_folder_abs, loader_cls=self.loader_cls)
@@ -44,10 +43,10 @@ class BaseDBLoader:
             else:
                 result = directory_loader.load()
 
-            result_storage.extend(result)
+            self.storage.extend(result)
 
         if is_regex:
-            self._result_to_regex(result_storage)
+            self._result_to_regex()
         
         return self.storage
 
@@ -59,7 +58,6 @@ class BaseDBLoader:
             sub_str = re.sub(pattern=regex, repl="", string=document.page_content)
             document.page_content = sub_str
             result.append(document)
-
         self.storage = result
         return 
 
