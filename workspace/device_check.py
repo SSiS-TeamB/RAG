@@ -1,8 +1,9 @@
-def _device_check() : 
+import torch
+
+def device_check() : 
     ''' for check cuda availability '''
-    import torch
     if torch.cuda.is_available():
-        device = "cuda" 
+        device = "cuda"
     elif torch.backends.mps.is_available():
         device = "mps"
     else:

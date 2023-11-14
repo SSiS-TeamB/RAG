@@ -18,6 +18,8 @@ from langchain.chains import RetrievalQA, HypotheticalDocumentEmbedder
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
+from device_check import device_check
+
 import pickle
 
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
@@ -26,20 +28,13 @@ os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 directory = os.path.dirname(__file__)
 os.chdir(directory)
 
-def _device_check() : 
-    ''' for check cuda availability '''
-    import torch
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    # torch.backends.mps.is_available()
-    return device
-
 #llm
 llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=1)
 
 #embedding config
 embedding = SentenceTransformerEmbeddings(
     model_name="da_finetune_epoch_2", 
-    model_kwargs={'device':_device_check()}, 
+    model_kwargs={'device':device_check()}, 
     encode_kwargs={'normalize_embeddings':True},
     )
 
