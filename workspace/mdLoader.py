@@ -13,7 +13,7 @@ from langchain.schema.document import Document
 class BaseDBLoader:
     """markdownDB folder에서 불러온 다음에 폴더별로 내부에 있는 내용 Load해서 Split하고 저장함"""
 
-    def __init__(self, loader_cls=UnstructuredMarkdownLoader, path_db: str = "./markdowndb", ):
+    def __init__(self, path_db:str, loader_cls=UnstructuredMarkdownLoader):
         # textsplitter config
         self.text_splitter = RecursiveCharacterTextSplitter(
             separators=["\n\n", "\n", " ", ""],
@@ -23,8 +23,8 @@ class BaseDBLoader:
         )
 
         #필요한 이유 -> llamaindex와 같이 폴더가 나누어져 있는 경우 경로 잡을 때 오류 발생할 가능성 줄이려고.
-        self.directory = os.path.dirname(__file__)
-        os.chdir(self.directory)
+        # self.directory = os.path.dirname(__file__)
+        # os.chdir(self.directory)
         
         # loaderclass config
         self.loader_cls = loader_cls

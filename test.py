@@ -1,10 +1,21 @@
 from workspace.mdLoader import BaseDBLoader
-import re
+from chromaVectorStore import ChromaVectorStore
+from chromaClient import ChromaClient
 
 
+# test_loader = BaseDBLoader()
+# docs = test_loader.load()
+# print(len(docs))
 
-test_loader = BaseDBLoader()
+query_text = '배고파ㅏㅏㅏ'
 
-docs = test_loader.load()
+base_model = "BM-K/KoSimCSE-roberta-multitask"
+vs_info_dict = {'model_name': base_model, 'collection_name': 'langchain', 'persist_directory': 'workspace/chroma_storage'}
+vector_store = ChromaVectorStore(**vs_info_dict)
 
-print(len(docs))
+res = vector_store.retrieve(query_text)
+
+print(res)
+
+# cc = ChromaClient()
+# print(cc.collection_list)

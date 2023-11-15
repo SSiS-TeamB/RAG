@@ -7,7 +7,7 @@ import uuid
 
 
 class ChromaClient:
-    def __init__(self, store_dir="chroma_storage") -> None:
+    def __init__(self, store_dir) -> None:
         self.client = chromadb.PersistentClient(path=store_dir, settings=Settings(allow_reset=True))
         self.collection_list = self.client.list_collections()
         self.collection = None
@@ -48,10 +48,10 @@ class ChromaClient:
     def semantic_search(self, q_list:list, k:int = 5) -> dict:
         return self.collection.query(query_texts=q_list, n_results=k)
 
-    # $$$ 리셋하면 다 지워지는 건지, 확인 후 수정하기!
-    def reset_client(self):
-        self.client.reset()
-        return
+    # 리셋하면 다 지워지는거
+    # def reset_client(self):
+    #     self.client.reset()
+    #     return
     pass
 
 

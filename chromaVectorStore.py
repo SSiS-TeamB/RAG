@@ -22,14 +22,14 @@ class ChromaVectorStore:
         ans2 = self.vs.max_marginal_relevance_search(query)
         return [ans1, ans2]
 
-    def load_docs(self, dir_path:str, model_name:str = "BM-K/KoSimCSE-roberta-multitask"):
+    def load_docs(self, per_dir_path:str, model_name:str = "BM-K/KoSimCSE-roberta-multitask"):
         emb_info_dict = {'model_name': model_name, 'model_kwargs': {'device': "cuda" if torch.cuda.is_available() else "cpu"},
 'encode_kwargs': {'normalize_embeddings': True}}
         emb = STE(**emb_info_dict)
 
         doc_loader = BaseDBLoader()
         docs = doc_loader.load()
-        vectorstore = Chroma.from_documents(docs, emb, dir_path)
+        vectorstore = Chroma.from_documents(docs, emb, per_dir_path)
         vectorstore.persist()
         print("There are", vectorstore._collection.count(), "in the collection.")
         return
