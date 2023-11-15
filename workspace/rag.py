@@ -14,9 +14,9 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
 import pickle
+from analogicalPrompt import generateAnalogicalPrompt
 
-from device_check import device_check
-from analogicalPrompt import generator_prompt
+from workspace.embeddingSetup import EmbeddingLoader
 
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
@@ -28,11 +28,7 @@ os.chdir(directory)
 llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0)
 
 #embedding config
-embedding = SentenceTransformerEmbeddings(
-    model_name="./da_finetune_epoch_2", 
-    model_kwargs={'device':device_check()}, 
-    encode_kwargs={'normalize_embeddings':True},
-    )
+embedding = EmbeddingLoader().load()
 
 ## embedding config - HyDE
 hyde_prompt_template = """ 
@@ -43,14 +39,15 @@ hyde_prompt_template = """
 
 """
 
-hyde_prompt_complete = PromptTemplate(input_variables=["question"], template= hyde_prompt_template)
-llm_chain = LLMChain(
+hyde_prompt = PromptTemplate(input_variables=["question"], template=hyde_prompt_template)
+
+hyde_generation_chain = LLMChain(
     llm=llm, 
-    prompt=hyde_prompt_complete,
+    prompt=hyde_prompt,
 )
 
 HyDEembeddings = HypotheticalDocumentEmbedder(
-    llm_chain=llm_chain,
+    llm_chain=hyde_generation_chain,
     base_embeddings=embedding,
 )
 
@@ -77,7 +74,7 @@ chain = RetrievalQA.from_chain_type(
                     llm=llm,
                     chain_type="stuff",
                     retriever=ensemble_retriever,
-                    chain_type_kwargs={"prompt":generator_prompt()})
+                    chain_type_kwargs={"prompt":generateAnalogicalPrompt()})
 
 ##### 예시
 response = chain.run("어민 풍수해 피해에 따른 보험금 산정은 어떻게 이루어져?")

@@ -12,3 +12,14 @@
 
 #### 
     1. workspace/analogicalPrompt.py 작성 -> RAG generator Prompt
+
+## 231115
+#### 송준호
+    1. workspace/embeddingSetup.py 만들어서 EmbeddingLoading 객체화
+    2. workspace/prompt 생성, analogicalPrompting.py 연동으로 codeline 줄임
+    3. rag 연동되도록 수정
+
+#### 가재준
+    1. chromaClient.py ChromaClient class 내부 메소드들 구현
+    2. chromaVectorStore.py Document 받고 -> 답변 retrieve 하는 class Cleancode로 수정
+    3. mainView.py Cleancode

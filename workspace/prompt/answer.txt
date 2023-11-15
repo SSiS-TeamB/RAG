@@ -1,0 +1,3 @@
+따라서 #Initial Question의 해결책은 다음과 같습니다. \n
+    "Q: {question}"
+    "A: ... " 

@@ -1,15 +1,9 @@
-""" streamlit app here """
-
 import streamlit as st
 import time
 from PIL import Image
 
 from chromaClient import ChromaClient
-from chromadb.utils import embedding_functions
-# import pandas as pd
-# import numpy as np
-# from tkinter.tix import COLUMN
-# from pyparsing import empty
+from chromaVectorStore import ChromaVectorStore
 
 
 st.set_page_config(layout='wide')
@@ -24,6 +18,18 @@ empty1, con5, con6, empty2 = st.columns([0.3, 0.5, 0.5, 0.3])
 empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
 
+# set DataBase
+
+base_model = "BM-K/KoSimCSE-roberta-multitask"
+
+# Settings for semantic_search using "chromadb" module
+chroma_client = ChromaClient()
+chroma_client.connect_collection('wf_schema', base_model)
+
+# Settings for semantic_search using vectorstores of langchain
+vs_info_dict = {'model_name': base_model, 'collection_name': 'wf_schema', 'persist_directory': './chroma_storage'}
+vector_store = ChromaVectorStore(**vs_info_dict)
+
 with con1:
     st.markdown("<h1 style='text-align: center; color: gray;'>검색 엔진 시스템</h1>", unsafe_allow_html=True)
     img_ssis = Image.open('image/ssis_logo.png')
@@ -34,7 +40,6 @@ with con1:
     col3.image(img_BL, use_column_width=True)
     st.markdown("<p style='text-align: right; color: gray;'>무엇이든 물어보세요</p>", unsafe_allow_html=True)
 #    st.header("Header")
-#    st.subheader('-'*60)
 #    st.image("https://static.streamlit.io/examples/cat.jpg", use_column_width=True)
 
 with con2:
@@ -44,12 +49,17 @@ with con2:
 
 with con3:
     btn_flag = st.button("click")
-    # chart_data = pd.DataFrame(np.random.randn(50, 3), columns=["a", "b", "c"])
-    # st.bar_chart(chart_data)
-    # st.write("Write Something")
 
-with con4:
-    if query_text or btn_flag:
+
+if query_text or btn_flag:
+    # semantic_search using "chromadb" module
+    results = chroma_client.semantic_search([query_text], 3)
+
+    # semantic_search using vectorstores of langchain
+    results_vs = vector_store.retrieve(query_text)
+
+    with con4:
+        # progress bar
         progress_text = f'Finding about "{query_text}"...'
         my_bar = st.progress(0, text=progress_text)
 
@@ -58,17 +68,12 @@ with con4:
             my_bar.progress(i+1, text=progress_text)
         time.sleep(1)
         my_bar.empty()
+
         # st.subheader('검색 결과')
-        st.markdown("<h2 style='text-align: center; color: black;'>검색 결과</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
 
-        # vector DB Load
-        chroma_client = ChromaClient()
-
-        # semantic_search
-        base_model = "BM-K/KoSimCSE-roberta-multitask"
-        emb_func = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=base_model, normalize_embeddings=True)
-        chroma_client.connect_collection('wf_schema', emb_func=emb_func)
-        results = chroma_client.semantic_search([query_text], 3)
-
+    with con5:
         st.write(results)
-    pass
+
+    with con6:
+        st.write(results_vs)

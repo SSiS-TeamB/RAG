@@ -1,0 +1,10 @@
+#Instruction : 
+    {instruction}
+    ==========
+    #Relevant Problems : 
+    {recall}
+
+    #Explain your reasoning : 
+    {explain}
+    ==========
+    #Solve the Initial Question : {answer}
