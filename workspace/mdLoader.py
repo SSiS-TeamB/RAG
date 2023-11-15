@@ -16,7 +16,9 @@ class BaseDBLoader:
     def __init__(self, loader_cls=UnstructuredMarkdownLoader, path_db: str = "./markdowndb", ):
         # textsplitter config
         self.text_splitter = RecursiveCharacterTextSplitter(
+            separators=["\n\n", "\n", " ", ""],
             chunk_size=200,
+            chunk_overlap=10,
             is_separator_regex=False,
         )
 
@@ -38,27 +40,29 @@ class BaseDBLoader:
         for db_folder in os.listdir(self.path_db):
             db_folder_abs = os.path.join(self.path_db, db_folder)
             directory_loader = DirectoryLoader(path=db_folder_abs, loader_cls=self.loader_cls)
-            if is_split:
-                result = directory_loader.load_and_split(text_splitter=self.text_splitter)
-            else:
-                result = directory_loader.load()
-            self.storage.extend(result)
 
-        if is_regex:
-            self._result_to_regex()
+            doc_list = directory_loader.load()
+
+            if is_regex:
+                doc_list = self._result_to_regex(doc_list)
+            
+            if is_split:
+                doc_list = self.text_splitter.split_documents(doc_list)
+            
+            self.storage.extend(doc_list)
         
         return self.storage
 
-    def _result_to_regex(self) -> list:
+    def _result_to_regex(self, doc_list:list[Document]) -> list[Document]:
         regex = '([^가-힣0-9a-zA-Z.,·•%↓()\s\\\])'
 
         result = []
-        for document in self.storage:
+        for document in doc_list:
             sub_str = re.sub(pattern=regex, repl="", string=document.page_content)
             document.page_content = sub_str
             result.append(document)
-        self.storage = result
-        return 
+        # self.storage = result
+        return result
 
     def get_corpus(self) -> dict:
         "self.storage가 존재한다면 dict로 결과 return함"
