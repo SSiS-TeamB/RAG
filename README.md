@@ -18,6 +18,7 @@
     1. workspace/embeddingSetup.py 만들어서 EmbeddingLoading 객체화
     2. workspace/prompt 생성, analogicalPrompting.py 연동으로 codeline 줄임
     3. rag 연동되도록 수정
+    4. chromaClient.py, chromaVectorStore.py 중복된 기능 chromaVectorStore.py 한 클래스(ChromaVectorStore) 로 통합
 
 #### 가재준
     1. chromaClient.py ChromaClient class 내부 메소드들 구현

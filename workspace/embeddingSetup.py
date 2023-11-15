@@ -1,4 +1,4 @@
-from deviceCheck import device_check
+from workspace.deviceCheck import device_check
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings as STE
 
 import os
