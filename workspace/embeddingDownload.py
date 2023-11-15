@@ -1,7 +1,7 @@
 """
     property : sentence_transformers (pip install transformers)
 
-    embedding 쉽게 받아오려고 쓰는거.
+    embedding Model 쉽게 받아오려고 쓰는거.
     모델 이름은 기본으로 저장된 BAAI/bge-base-en-v1.5 말고 다른거 쓰고싶으면 HuggingFace에서 알아서 찾아서 download에 인수로 넣을 것.
 
 """
