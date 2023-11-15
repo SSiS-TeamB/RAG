@@ -13,7 +13,7 @@ class ChromaClient:
         self.collection = None
         return
 
-    # $$$ get_or_create_collection 로 바꿔도 무방
+    # $$$ get_or_create_collection로 바꿔도 무방
     def make_collection(self, coll_name, emb_model:str, meta_dict={"hnsw:space": "cosine"}):
         if emb_func:
             emb_func = STEF(model_name=emb_model, normalize_embeddings=True)

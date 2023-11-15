@@ -17,9 +17,7 @@ empty1, con4, empty2 = st.columns([0.3, 1.0, 0.3])
 empty1, con5, con6, empty2 = st.columns([0.3, 0.5, 0.5, 0.3])
 empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
-
 # set DataBase
-
 base_model = "BM-K/KoSimCSE-roberta-multitask"
 
 # Settings for semantic_search using "chromadb" module

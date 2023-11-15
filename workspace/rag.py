@@ -1,23 +1,18 @@
 import os
-
-from langchain.vectorstores.chroma import Chroma
-from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-
 #api key(추가해서 쓰시오)
-import settings
-
-from langchain.chat_models import ChatOpenAI
-from langchain.retrievers import BM25Retriever, EnsembleRetriever
-from langchain.chains import RetrievalQA, HypotheticalDocumentEmbedder
-
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
-
 import pickle
+import settings
 from analogicalPrompt import generateAnalogicalPrompt
-
 from workspace.embeddingSetup import EmbeddingLoader
 
+from langchain.vectorstores.chroma import Chroma
+from langchain.chat_models import ChatOpenAI
+from langchain.retrievers import BM25Retriever, EnsembleRetriever
+from langchain.chains import LLMChain, RetrievalQA, HypotheticalDocumentEmbedder
+from langchain.prompts import PromptTemplate
+
+
+#api key settings
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 #directory settings
@@ -46,13 +41,13 @@ hyde_generation_chain = LLMChain(
     prompt=hyde_prompt,
 )
 
-HyDEembeddings = HypotheticalDocumentEmbedder(
+hydeembeddings = HypotheticalDocumentEmbedder(
     llm_chain=hyde_generation_chain,
     base_embeddings=embedding,
 )
 
 #get vectorstore *HyDE Embedding
-vectorstore = Chroma(collection_name="vector_db", persist_directory="./chroma_storage", embedding_function=HyDEembeddings)
+vectorstore = Chroma(collection_name="vector_db", persist_directory="./chroma_storage", embedding_function=hydeembeddings)
 
 #### pickle 받도록 수정해야 함..
 #get document from pickle(use as documents in bm25_retriever)
