@@ -1,3 +1,4 @@
+import torch
 from langchain.vectorstores import Chroma
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings as STE
 
@@ -6,7 +7,11 @@ from workspace.mdLoader import BaseDBLoader
 
 class ChromaVectorStore:
     def __init__(self, **kwargs) -> None:
-        
+        emb_info_dict = {'model_name': kwargs.pop('model_name'), 'model_kwargs': {'device': "cuda" if torch.cuda.is_available() else "cpu"},
+'encode_kwargs': {'normalize_embeddings': True}}
+        emb = STE(**emb_info_dict)
+        kwargs['embedding_function'] = emb
+
         self.vs = Chroma(**kwargs)
         self.retriever = self.vs.as_retriever(search_type='mmr')
         return

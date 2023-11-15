@@ -3,17 +3,7 @@ import time
 from PIL import Image
 
 from chromaClient import ChromaClient
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction as STEF
-
-# from langchain.vectorstores.chroma import Chroma
 from chromaVectorStore import ChromaVectorStore
-from langchain.embeddings import SentenceTransformerEmbeddings as STE
-import torch
-
-# import pandas as pd
-# import numpy as np
-# from tkinter.tix import COLUMN
-# from pyparsing import empty
 
 
 st.set_page_config(layout='wide')
@@ -27,19 +17,17 @@ empty1, con4, empty2 = st.columns([0.3, 1.0, 0.3])
 empty1, con5, con6, empty2 = st.columns([0.3, 0.5, 0.5, 0.3])
 empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
-# vector DB Load
-chroma_client = ChromaClient()
+
+# set DataBase
+
 base_model = "BM-K/KoSimCSE-roberta-multitask"
 
 # Settings for semantic_search using "chromadb" module
-emb_func = STEF(model_name=base_model, normalize_embeddings=True)
-chroma_client.connect_collection('wf_schema', emb_func=emb_func)
+chroma_client = ChromaClient()
+chroma_client.connect_collection('wf_schema', base_model)
 
 # Settings for semantic_search using vectorstores of langchain
-emb_info_dict = {'model_name': base_model, 'model_kwargs': {'device': "cuda" if torch.cuda.is_available() else "cpu"},
-'encode_kwargs': {'normalize_embeddings': True}}
-emb = STE(**emb_info_dict)
-vs_info_dict = {'collection_name': 'wf_schema', 'persist_directory': './chroma_storage', 'embedding_function': emb}
+vs_info_dict = {'model_name': base_model, 'collection_name': 'wf_schema', 'persist_directory': './chroma_storage'}
 vector_store = ChromaVectorStore(**vs_info_dict)
 
 with con1:
@@ -61,13 +49,9 @@ with con2:
 
 with con3:
     btn_flag = st.button("click")
-    # chart_data = pd.DataFrame(np.random.randn(50, 3), columns=["a", "b", "c"])
-    # st.bar_chart(chart_data)
-    # st.write("Write Something")
 
 
 if query_text or btn_flag:
-
     # semantic_search using "chromadb" module
     results = chroma_client.semantic_search([query_text], 3)
 
@@ -85,9 +69,6 @@ if query_text or btn_flag:
         time.sleep(1)
         my_bar.empty()
 
-        # with st.spinner('Wait for it...'):
-        #     time.sleep(5)
-        
         # st.subheader('검색 결과')
         st.markdown("<h2 style='text-align: center; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
 

@@ -14,14 +14,16 @@ class ChromaClient:
         return
 
     # $$$ get_or_create_collection 로 바꿔도 무방
-    def make_collection(self, coll_name, emb_func:STEF, meta_dict={"hnsw:space": "cosine"}):
+    def make_collection(self, coll_name, emb_model:str, meta_dict={"hnsw:space": "cosine"}):
         if emb_func:
+            emb_func = STEF(model_name=emb_model, normalize_embeddings=True)
             self.client.create_collection(name=coll_name, embedding_function=emb_func, metadata=meta_dict)
         else:
             self.client.create_collection(name=coll_name, metadata=meta_dict)
         return
-    def connect_collection(self, coll_name, emb_func:STEF):
-        if emb_func:
+    def connect_collection(self, coll_name, emb_model:str):
+        if emb_model:
+            emb_func = STEF(model_name=emb_model, normalize_embeddings=True)
             self.collection = self.client.get_collection(name=coll_name, embedding_function=emb_func)
         else:
             self.client.get_collection(name=coll_name)
