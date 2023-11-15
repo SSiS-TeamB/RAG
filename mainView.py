@@ -39,8 +39,6 @@ with con1:
     col2.empty()
     col3.image(img_BL, use_column_width=True)
     st.markdown("<p style='text-align: right; color: gray;'>무엇이든 물어보세요</p>", unsafe_allow_html=True)
-#    st.header("Header")
-#    st.image("https://static.streamlit.io/examples/cat.jpg", use_column_width=True)
 
 with con2:
     query_text = st.text_input('검색하셈', label_visibility='collapsed')
