@@ -2,7 +2,7 @@ import streamlit as st
 import time
 from PIL import Image
 
-from chromaClient import ChromaClient
+# from chromaClient import ChromaClient
 from chromaVectorStore import ChromaVectorStore
 
 
@@ -19,14 +19,15 @@ empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
 
 # set DataBase
-base_model = "BM-K/KoSimCSE-roberta-multitask"
+# base_model = "BM-K/KoSimCSE-roberta-multitask"
+base_model = "da_finetune_epoch_2"
 
 # Settings for semantic_search using "chromadb" module
-chroma_client = ChromaClient('./workspace/chroma_storage')
-chroma_client.connect_collection('langchain', base_model)
+# chroma_client = ChromaClient('./workspace/chroma_storage')
+# chroma_client.connect_collection('langchain', base_model)
 
 # Settings for semantic_search using vectorstores of langchain
-vs_info_dict = {'model_name': base_model, 'collection_name': 'wf_schema', 'persist_directory': './chroma_storage'}
+vs_info_dict = {'model_name': base_model, 'collection_name': 'langchain', 'persist_directory': 'workspace/chroma_storage'}
 vector_store = ChromaVectorStore(**vs_info_dict)
 
 with con1:
@@ -50,7 +51,7 @@ with con3:
 
 if query_text or btn_flag:
     # semantic_search using "chromadb" module
-    results = chroma_client.semantic_search([query_text], 3)
+    # results = chroma_client.semantic_search([query_text], 3)
 
     # semantic_search using vectorstores of langchain
     results_vs = vector_store.retrieve(query_text)
@@ -69,10 +70,13 @@ if query_text or btn_flag:
         # st.subheader('검색 결과')
         st.markdown("<h2 style='text-align: center; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
 
-    with con5:
-        st.write(results)
+    # with con5:
+    #     st.write(results)
 
-    with con6:
+    # with con6:
+    #     st.write(results_vs)
+
+    with con7:
         st.write(results_vs)
 
 
