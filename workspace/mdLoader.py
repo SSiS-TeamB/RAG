@@ -25,7 +25,7 @@ class BaseDBLoader:
         #필요한 이유 -> llamaindex와 같이 폴더가 나누어져 있는 경우 경로 잡을 때 오류 발생할 가능성 줄이려고.
         # self.directory = os.path.dirname(__file__)
         # os.chdir(self.directory)
-        
+
         # loaderclass config
         self.loader_cls = loader_cls
         # md 파일 담고 있는 전체 디렉터리 경로
@@ -40,17 +40,13 @@ class BaseDBLoader:
         for db_folder in os.listdir(self.path_db):
             db_folder_abs = os.path.join(self.path_db, db_folder)
             directory_loader = DirectoryLoader(path=db_folder_abs, loader_cls=self.loader_cls)
-
             doc_list = directory_loader.load()
 
             if is_regex:
-                doc_list = self._result_to_regex(doc_list)
-            
+                doc_list = self._result_to_regex(doc_list)            
             if is_split:
                 doc_list = self.text_splitter.split_documents(doc_list)
-            
             self.storage.extend(doc_list)
-        
         return self.storage
 
     def _result_to_regex(self, doc_list:list[Document]) -> list[Document]:
@@ -61,7 +57,6 @@ class BaseDBLoader:
             sub_str = re.sub(pattern=regex, repl="", string=document.page_content)
             document.page_content = sub_str
             result.append(document)
-        # self.storage = result
         return result
 
     def get_corpus(self) -> dict:

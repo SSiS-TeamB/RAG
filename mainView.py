@@ -22,8 +22,8 @@ empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 base_model = "BM-K/KoSimCSE-roberta-multitask"
 
 # Settings for semantic_search using "chromadb" module
-chroma_client = ChromaClient()
-chroma_client.connect_collection('wf_schema', base_model)
+chroma_client = ChromaClient('./workspace/chroma_storage')
+chroma_client.connect_collection('langchain', base_model)
 
 # Settings for semantic_search using vectorstores of langchain
 vs_info_dict = {'model_name': base_model, 'collection_name': 'wf_schema', 'persist_directory': './chroma_storage'}
