@@ -33,3 +33,4 @@ class ChromaVectorStore:
         vectorstore.persist()
         print("There are", vectorstore._collection.count(), "in the collection.")
         return
+

@@ -2,19 +2,20 @@
 workspace/settings.py
 
 BM-K
+da_finetune_epoch_2
 chroma_storage
-workspace/BM-K
 .ipynb_checkpoints
+__pycache__
 
 ## test file
 Test.ipynb
 dbtest.ipynb
 
 ### pycache
-__pycache__
+workspace/BM-K
 workspace/__pycache__
 workspace/markdownDB
-
+workspace/chroma_storage
 
 #### util
 embedding.py
