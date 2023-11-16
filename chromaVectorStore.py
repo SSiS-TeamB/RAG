@@ -14,6 +14,7 @@ class ChromaVectorStore:
         kwargs['embedding_function'] = self.emb
         self.vs = Chroma(**kwargs)
         self.vs_dir_path = kwargs['persist_directory']
+        self.vs_coll_name = kwargs['collection_name']
 
         self.retriever = self.vs.as_retriever(search_type='mmr')
         
@@ -39,7 +40,8 @@ class ChromaVectorStore:
     
     def _get_pickle(self, documents:list[Document], save_path:str) -> None:
         """ pickle file(for BM25 documents) -> 빠른 loading 위해서 file 형식으로 저장 """
-        result_save_path = os.path.join(save_path, 'document.pkl')
+        root_path_split = save_path.split("/")
+        result_save_path = os.path.join(root_path_split[0], 'document.pkl')
         result_save_path = result_save_path.replace("\\","/")
         with open(result_save_path, 'wb') as file :
             pickle.dump(documents, file)
@@ -52,7 +54,7 @@ class ChromaVectorStore:
         docs = doc_loader.load()
         self._get_pickle(documents=docs, save_path=document_path) #get pickle file -> to Save time, save list of Documents
 
-        vectorstore = Chroma.from_documents(documents=docs, embedding=self.emb, persist_directory=self.vs_dir_path)
+        vectorstore = Chroma.from_documents(documents=docs, embedding=self.emb, collection_name=self.vs_coll_name, persist_directory=self.vs_dir_path)
         vectorstore.persist()
         print("There are", vectorstore._collection.count(), "in the collection.")
 
