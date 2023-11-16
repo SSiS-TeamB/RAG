@@ -4,6 +4,7 @@ from PIL import Image
 
 # from chromaClient import ChromaClient
 from chromaVectorStore import ChromaVectorStore
+from rag import RAGPipeline
 
 
 st.set_page_config(layout='wide')
@@ -17,12 +18,6 @@ empty1, con4, empty2 = st.columns([0.3, 1.0, 0.3])
 empty1, con5, con6, empty2 = st.columns([0.3, 0.5, 0.5, 0.3])
 empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
-# set DataBase
-# base_model = "BM-K/KoSimCSE-roberta-multitask"
-
-# Settings for semantic_search using "chromadb" module
-# chroma_client = ChromaClient()
-# chroma_client.connect_collection('wf_schema', base_model)
 
 # Settings for semantic_search using vectorstores of langchain
 vs_info_dict = {"collection_name":"wf_schema", "persist_directory":"workspace/chroma_storage",}
@@ -54,6 +49,10 @@ if query_text or btn_flag:
     # semantic_search using vectorstores of langchain
     results_vs = vector_store.retrieve(query_text, is_sim_search=True)
 
+    ## RAG result
+    rag_pipeline = RAGPipeline(vectorstore=vector_store.vs, embedding=vector_store.emb)
+    results_rag = rag_pipeline.invoke(query_text)
+
     with con4:
         # progress bar
         progress_text = f'Finding about "{query_text}"...'
@@ -69,7 +68,7 @@ if query_text or btn_flag:
         st.markdown("<h2 style='text-align: center; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
 
     with con5:
-        st.write(results_vs)
+        st.markdown(results_rag)
 
     with con6:
-        pass
+        st.markdown(RAGPipeline.format_docs(results_vs))

@@ -49,9 +49,9 @@ class ChromaVectorStore:
 
         return
 
-    def load_docs(self, document_path:str) -> None :
+    def load_docs(self, document_path:str, is_split=True, is_regex=True) -> None :
         doc_loader = BaseDBLoader(document_path)
-        docs = doc_loader.load()
+        docs = doc_loader.load(is_split, is_regex)
         self._get_pickle(documents=docs, save_path=document_path) #get pickle file -> to Save time, save list of Documents
 
         vectorstore = Chroma.from_documents(documents=docs, embedding=self.emb, collection_name=self.vs_coll_name, persist_directory=self.vs_dir_path)
@@ -63,8 +63,8 @@ class ChromaVectorStore:
 ## 사용예제
 if __name__ == "__main__":
     vectorstore = ChromaVectorStore(**{
-        "collection_name":"wf_schema",
+        "collection_name":"wf_schema_no_split",
         "persist_directory":"workspace/chroma_storage",
     })
 
-    vectorstore.load_docs(document_path="workspace/markdownDB")
+    vectorstore.load_docs(document_path="workspace/markdownDB", is_regex=True, is_split=False)

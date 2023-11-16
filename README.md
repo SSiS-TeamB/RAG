@@ -24,3 +24,10 @@
     1. chromaClient.py ChromaClient class 내부 메소드들 구현
     2. chromaVectorStore.py Document 받고 -> 답변 retrieve 하는 class Cleancode로 수정
     3. mainView.py Cleancode
+
+## 231116
+#### 송준호
+    1. file들 간 의존성 문제 해결 -> rag file main으로 뺴고, 나머지 import 부분 수정
+
+#### 가재준
+    1. workspace/mdLoader.py -> 함수 부분 수정

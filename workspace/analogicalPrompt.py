@@ -33,6 +33,6 @@ def generateAnalogicalPrompt() -> PipelinePromptTemplate:
 
     return prompt_pipeline
 
-### test 
-# if __name__ == "__main__" :
-#     print(generateAnalogicalPrompt())
+## test 
+if __name__ == "__main__" :
+    print(generateAnalogicalPrompt())

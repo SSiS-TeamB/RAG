@@ -1,3 +1,3 @@
-따라서 #Initial Question의 해결책은 다음과 같습니다. \n
-    "Q: {question}"
-    "A: ... " 
+따라서 #Initial Question과 주어진 정보를 기반으로 검색하는 사람에게 정보를 전부 알려주는 문서를 작성해줘. \n
+    
+    ...
