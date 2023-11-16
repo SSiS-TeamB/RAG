@@ -5,9 +5,14 @@ workspace/settings.py
 workspace/da_finetune_epoch_2
 
 ### __pycache__
+__pycache__
 workspace/__pycache__
 
 ### chromastorage
 workspace/chroma_storage
 ### document pickle file
-workspace/document.pkl
+workspace/markdownDB/document.pkl
+
+
+#### test
+dependencyIngection.ipynb

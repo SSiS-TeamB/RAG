@@ -1,4 +1,5 @@
-import os
+""" 1116 12:54 의존성 문제 해결 """
+
 from langchain.prompts.pipeline import PipelinePromptTemplate
 from langchain.prompts import PromptTemplate
 
@@ -9,14 +10,12 @@ def _extract_text(file_path:str) -> str:
 
 def generateAnalogicalPrompt() -> PipelinePromptTemplate:
     """ get text template from /prompt folder to PipelinePromptTemplate. """
-    filedirectory = os.path.dirname(__file__)
-    os.chdir(filedirectory)
 
     #get text from file
-    prompt_wrapper = _extract_text("./prompt/wrapper.txt")
-    instruction_template = _extract_text("./prompt/instruction.txt")
-    recall_template = _extract_text("./prompt/recall.txt")
-    answer_template = _extract_text("./prompt/answer.txt")
+    prompt_wrapper = _extract_text("workspace/prompt/wrapper.txt")
+    instruction_template = _extract_text("workspace/prompt/instruction.txt")
+    recall_template = _extract_text("workspace/prompt/recall.txt")
+    answer_template = _extract_text("workspace/prompt/answer.txt")
 
     #### merge prompt templates -> to Prompt Pipeline
     instruction_prompt = PromptTemplate.from_template(instruction_template)
@@ -33,3 +32,7 @@ def generateAnalogicalPrompt() -> PipelinePromptTemplate:
     prompt_pipeline = PipelinePromptTemplate(final_prompt=final_prompt, pipeline_prompts=input_prompts)
 
     return prompt_pipeline
+
+### test 
+# if __name__ == "__main__" :
+#     print(generateAnalogicalPrompt())

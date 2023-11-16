@@ -1,8 +1,8 @@
 import os
-#api key(추가해서 쓰시오)
 import pickle
-import settings
-from analogicalPrompt import generateAnalogicalPrompt
+#api key(추가해서 쓰시오)
+from workspace.settings import openai_api_key
+from workspace.analogicalPrompt import generateAnalogicalPrompt
 from workspace.embeddingSetup import EmbeddingLoader
 
 from langchain.vectorstores.chroma import Chroma
@@ -13,7 +13,7 @@ from langchain.prompts import PromptTemplate
 
 
 #api key settings
-os.environ["OPENAI_API_KEY"] = settings.openai_api_key
+os.environ["OPENAI_API_KEY"] = openai_api_key
 
 #directory settings
 directory = os.path.dirname(__file__)
