@@ -20,7 +20,8 @@ empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
 
 # Settings for semantic_search using vectorstores of langchain
-vs_info_dict = {"collection_name":"wf_schema", "persist_directory":"workspace/chroma_storage",}
+# vs_info_dict = {"collection_name":"wf_schema", "persist_directory":"workspace/chroma_storage",}
+vs_info_dict = {"collection_name":"wf_schema_no_split", "persist_directory":"workspace/chroma_storage",}
 vector_store = ChromaVectorStore(**vs_info_dict)
 
 with con1:
@@ -68,7 +69,13 @@ if query_text or btn_flag:
         st.markdown("<h2 style='text-align: center; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
 
     with con5:
+        st.write("답변")
         st.markdown(results_rag)
 
     with con6:
+        st.write("<<< 관련 문서 >>>")
         st.markdown(RAGPipeline.format_docs(results_vs))
+        # sp_str = "\n"+'*'*50+"\n"
+        # st.write(sp_str.join(doc.page_content for doc in results_vs))
+        # print(results_vs)
+
