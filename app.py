@@ -18,7 +18,6 @@ empty1, con4, empty2 = st.columns([0.3, 1.0, 0.3])
 empty1, con5, con6, empty2 = st.columns([0.3, 0.5, 0.5, 0.3])
 empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
-
 # Settings for semantic_search using vectorstores of langchain
 # vs_info_dict = {"collection_name":"wf_schema", "persist_directory":"workspace/chroma_storage",}
 vs_info_dict = {"collection_name":"wf_schema_no_split", "persist_directory":"workspace/chroma_storage",}
@@ -79,7 +78,7 @@ if query_text or btn_flag:
         my_bar.empty()
 
         # st.subheader('검색 결과')
-        st.markdown("<h2 style='text-align: center; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: left; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
 
     with con5:
         st.write("## 답변")

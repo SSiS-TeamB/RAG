@@ -67,7 +67,7 @@ class RAGPipeline:
             is_separator_regex=False,
         )
 
-        #### encode cachefile into byte
+        #### encode cachefile into byte (to use ParentDocumentRetriever)
         fs = LocalFileStore("cache")
         store = create_kv_docstore(fs)
 
@@ -77,7 +77,7 @@ class RAGPipeline:
             docstore=store,
             child_splitter=child_splitter,
             search_type="similarity_score_threshold", 
-            search_kwargs={"score_threshold": 0.3,"k":5},
+            search_kwargs={"score_threshold":0.3, "k":5},
         )
 
         ## check cachefile exsists 
@@ -95,7 +95,7 @@ class RAGPipeline:
         # Ensemble
         self.ensemble_retriever = EnsembleRetriever(retrievers=[self.bm25_retriever, self.parent_retreiver], weights=[0.3, 0.7])
 
-        # RAG 체인 구성
+        # RAG 체인 구성 With-Analogical Prompting
         # self.rag_chain = (
         #     {"context": self.ensemble_retriever | self.format_docs, "question": RunnablePassthrough()}
         #     | generateAnalogicalPrompt()
@@ -113,7 +113,7 @@ class RAGPipeline:
 
     @staticmethod
     def format_docs(docs):
-        return "\n\n".join(doc.page_content for doc in docs)
+        return "\n\n\n".join(doc.page_content for doc in docs)
 
     def invoke(self, query):
         return self.rag_chain.invoke(query)
