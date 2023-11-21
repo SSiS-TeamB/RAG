@@ -2,7 +2,7 @@ import os
 import pickle
 #api key(추가해서 쓰시오)
 from workspace.settings import openai_api_key
-from workspace.analogicalPrompt import generateAnalogicalPrompt
+from workspace.analogicalPrompt import generateAnalogicalPrompt, get_normal_prompt
 
 from langchain.chat_models import ChatOpenAI
 from langchain.retrievers import BM25Retriever, EnsembleRetriever
@@ -90,15 +90,23 @@ class RAGPipeline:
 
         # BM25 Retriever
         self.bm25_retriever = BM25Retriever.from_documents(documents=self.documents)
-        self.bm25_retriever.k = 5
+        self.bm25_retriever.k = 3
 
         # Ensemble
-        self.ensemble_retriever = EnsembleRetriever(retrievers=[self.bm25_retriever, self.parent_retreiver], weights=[0.5, 0.5])
+        self.ensemble_retriever = EnsembleRetriever(retrievers=[self.bm25_retriever, self.parent_retreiver], weights=[0.3, 0.7])
 
         # RAG 체인 구성
+        # self.rag_chain = (
+        #     {"context": self.ensemble_retriever | self.format_docs, "question": RunnablePassthrough()}
+        #     | generateAnalogicalPrompt()
+        #     | self.llm
+        #     | StrOutputParser()
+        # )
+        
+        # Non-Analogical Prompting
         self.rag_chain = (
             {"context": self.ensemble_retriever | self.format_docs, "question": RunnablePassthrough()}
-            | generateAnalogicalPrompt()
+            | get_normal_prompt()
             | self.llm
             | StrOutputParser()
         )
