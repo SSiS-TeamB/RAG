@@ -35,17 +35,20 @@ def generateAnalogicalPrompt() -> PipelinePromptTemplate:
 
 def get_normal_prompt() -> PromptTemplate:
     """ get normal RAG template -> context : query(question). """
-    prompt_template = PromptTemplate.from_template("""You are an expert on South Korea's welfare system. Please respond to the questions based on the following information. Your answer should be kind, detailed, and informative, especially for those unfamiliar with the system. The format for documents and questions is as follows:
+    prompt_template = PromptTemplate.from_template("""
+    You are an expert on welfare system. 
+    Please respond to people's questions based on the following information. 
+    Your answer should be kind, detailed, and informative, especially for those unfamiliar with the system. 
+    The format for documents and questions is as follows:
 
     context below here :
     {context}
     ==============================================================
     Question:
     {question}
-
-    Answer:
-        ....
-    The answer must be written solely in Korean.""")
+                                                   
+    The answer must be written solely in Korean.
+    return answer only.""")
 
     return prompt_template
 

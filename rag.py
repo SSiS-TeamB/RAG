@@ -51,7 +51,6 @@ class RAGPipeline:
         self.embedding = embedding
         
         save_path = "workspace/document.pkl"
-
         if not os.path.exists(save_path) :
             document = BaseDBLoader("workspace/markdownDB").load(is_split=False, is_regex=True)
             ChromaVectorStore.get_pickle(documents=document, save_path=save_path)
@@ -67,7 +66,7 @@ class RAGPipeline:
             is_separator_regex=False,
         )
 
-        #### encode cachefile into byte (to use ParentDocumentRetriever)
+        #### encode cachefile into byte(to use ParentDocumentRetriever)
         fs = LocalFileStore("cache")
         store = create_kv_docstore(fs)
 
