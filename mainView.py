@@ -18,11 +18,6 @@ empty1, con4, empty2 = st.columns([0.3, 1.0, 0.3])
 empty1, con5, con6, empty2 = st.columns([0.3, 0.5, 0.5, 0.3])
 empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
-
-# Settings for semantic_search using vectorstores of langchain
-vs_info_dict = {"collection_name":"wf_schema", "persist_directory":"workspace/chroma_storage",}
-vector_store = ChromaVectorStore(**vs_info_dict)
-
 with con1:
     st.markdown("<h1 style='text-align: center; color: gray;'>검색 엔진 시스템</h1>", unsafe_allow_html=True)
     img_ssis = Image.open('image/ssis_logo.png')
@@ -42,16 +37,28 @@ with con2:
 with con3:
     btn_flag = st.button("click")
 
+# Settings for semantic_search using vectorstores of langchain
+collection_name = "wf_schema_split"
+persist_directory = "workspace/chroma_storage"
+
+vectorstore = ChromaVectorStore(**{
+    "collection_name":collection_name, 
+    "persist_directory":persist_directory,
+    "collection_metadata" : {"hnsw:space":"cosine"}
+})
+
+### button Event
 if query_text or btn_flag:
     # semantic_search using "chromadb" module
     # results = chroma_client.semantic_search([query_text], 3)
 
-    # semantic_search using vectorstores of langchain
-    results_vs = vector_store.retrieve(query_text, is_sim_search=True)
-
     ## RAG result
-    rag_pipeline = RAGPipeline(vectorstore=vector_store.vs, embedding=vector_store.emb)
+    model = "gpt-4-1106-preview"
+    rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
     results_rag = rag_pipeline.invoke(query_text)
+
+    # semantic_search using vectorstores of langchain
+    results_vs = rag_pipeline.retrieve(query_text)
 
     with con4:
         # progress bar
