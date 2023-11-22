@@ -38,11 +38,8 @@ class ChromaVectorStore:
 
         return answer
     
-    @staticmethod
-    def get_pickle(documents:list[Document], save_path:str) -> None:
-        """ pickle file(for BM25 documents) -> 빠른 loading 위해서 file 형식으로 저장 
-            11-21 : staticmethod로 변경 후 사용.
-        """
+    def _get_pickle(self, documents:list[Document], save_path:str) -> None:
+        """ pickle file(for BM25 documents) -> 빠른 loading 위해서 file 형식으로 저장 """
         root_path_split = save_path.split("/")
         result_save_path = os.path.join(root_path_split[0], 'document.pkl')
         result_save_path = result_save_path.replace("\\","/")
@@ -55,7 +52,7 @@ class ChromaVectorStore:
     def load_docs(self, document_path:str, is_split=True, is_regex=True) -> None :
         doc_loader = BaseDBLoader(document_path)
         docs = doc_loader.load(is_split, is_regex)
-        self.get_pickle(documents=docs, save_path=document_path) #get pickle file -> to Initiate BM25 Search and Save time, save list of Documents
+        self._get_pickle(documents=docs, save_path=document_path) #get pickle file -> to Save time, save list of Documents
 
         vectorstore = Chroma.from_documents(documents=docs, embedding=self.emb, collection_name=self.vs_coll_name, persist_directory=self.vs_dir_path)
         vectorstore.persist()
@@ -65,14 +62,10 @@ class ChromaVectorStore:
 
 ## 사용예제
 if __name__ == "__main__":
-    collection_name = "wf_schema_split"
-    persist_directory = "workspace/chroma_storage"
-
     vectorstore = ChromaVectorStore(**{
-        "collection_name":collection_name, 
-        "persist_directory":persist_directory,
-        "collection_metadata" : {"hnsw:space":"cosine"}
+        "collection_name":"wf_schema_no_split",
+        "persist_directory":"workspace/chroma_storage",
     })
 
-    ### 일단 document split 없이 빈 collection 만들고 ParentdocumentRetriever에서 사용함.
-
+    vectorstore.load_docs(document_path="workspace/markdownDB", is_regex=True, is_split=True)
+    
