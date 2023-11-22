@@ -5,7 +5,8 @@
 ## 2023-11-21
 - Search Engine 결과에 metadata활용하여 document 출처 넣음
     - rag.py 
-        - ```수정부분
+        - 수정한 부분
+            ```
              @staticmethod
              def format_docs(docs):
            ```
