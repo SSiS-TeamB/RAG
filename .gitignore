@@ -2,7 +2,9 @@
 workspace/settings.py
 
 ### model
+workspace/da_finetue_epoch_2.7z
 workspace/da_finetune_epoch_2
+workspace/BM-K
 
 ### __pycache__
 __pycache__
@@ -13,6 +15,9 @@ workspace/chroma_storage
 ### document pickle file
 workspace/document.pkl
 
+### txt
+*.txt
 
 #### test
-dependencyIngection.ipynb
+test.ipynb
+test.py
