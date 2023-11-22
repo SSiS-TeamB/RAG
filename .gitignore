@@ -2,7 +2,7 @@
 workspace/settings.py
 
 ### model
-workspace/da_finetue_epoch_2.7z
+workspace/da_finetune_epoch_2.7z
 workspace/da_finetune_epoch_2
 workspace/BM-K
 
