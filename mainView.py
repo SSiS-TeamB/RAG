@@ -64,6 +64,7 @@ if query_text or btn_flag:
             my_bar.progress(i+1, text=progress_text)
         time.sleep(1)
         my_bar.empty()
+        # st.balloons()
 
         # st.subheader('검색 결과')
         st.markdown("<h2 style='text-align: center; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
