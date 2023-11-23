@@ -19,29 +19,6 @@ from langchain.storage._lc_store import create_kv_docstore
 from chromaVectorStore import ChromaVectorStore
 from workspace.mdLoader import BaseDBLoader 
 
-###### 시간복잡도 Issue로 HyDE 일단 보류했음. 정확도 측면 제대로 평가하면 쓸 생각.
-## embedding config - HyDE
-# hyde_prompt_template = """ 
-#     Write a passage in Korean to answer the #question in detail.
-
-#     #question : {question}
-#     #passage : ...
-# """
-
-# hyde_prompt = PromptTemplate(input_variables=["question"], template=hyde_prompt_template)
-
-# hyde_generation_chain = LLMChain(
-#     llm=llm, 
-#     prompt=hyde_prompt,
-# )
-
-# hydeembeddings = HypotheticalDocumentEmbedder(
-#     llm_chain=hyde_generation_chain,
-#     base_embeddings=embedding,
-# )
-
-####################### code 정리하시오
-
 #api key settings
 os.environ["OPENAI_API_KEY"] = openai_api_key
 
@@ -114,25 +91,39 @@ class RAGPipeline:
     @staticmethod
     def format_docs(docs):
         ## 어느 제도 부분에서 가져왔는지 나타내는 출처 : medata 활용해서 같이 출력
+        sep_str = "\n\n"
         result = []
+
         for doc in docs:
-            title_resource = doc.metadata
-            title_resource = str(title_resource).split(":")[1].lstrip()
-            title_resource = re.sub(pattern="}|'",repl="",string=title_resource)
+            ### 이 부분도 수정해야 함.. (key : value로)
+            metadata = doc.metadata
+            title_resource = str(metadata).split(":")[1].lstrip()
+            title_resource = re.sub(pattern="}|'", repl="", string=title_resource)
             title_resource = title_resource.split("\\")[4]+"_"+title_resource.split("\\")[-1]
+            
             content = doc.page_content 
-            # print(f"** 출처 ** : \n {title_resource}", end="\n\n")
-            # print(f"*** 제도내용 *** : \n {content}", end="\n\n")
-            unit_doc = content + f"\n\n 출처 : {title_resource}"
-            result.append(unit_doc)
+            content_splitted = content.split('\n\n')
+            title = content_splitted[0]
+
+            displayed_text = " ".join(content_splitted[1:])[:300]
+            displayed_text = re.sub('\n+', ' ', displayed_text)
+            # if len(displayed_text) > 300:
+            #     displayed_text = displayed_text[297]+' ...'
+            displayed_text += " ..."
+
+            content = f"[{title}]\n\n {displayed_text}"
+            formatted_document = content + f"\n\n 출처 : {title_resource}"
+            result.append(formatted_document)
         
-        return "\n\n".join(doc for doc in result)
+        return sep_str.join(doc for doc in result)
 
     def invoke(self, query):
         return self.rag_chain.invoke(query)
     
     def retrieve(self, query):
-        return self.parent_retreiver.get_relevant_documents(query)
+        return self.ensemble_retriever.get_relevant_documents(query)
+        # return self.ensemble_retriever.invoke(query)
+
 
 """ ref
 https://python.langchain.com/docs/use_cases/question_answering/vector_db_qa
@@ -142,3 +133,26 @@ https://python.langchain.com/docs/use_cases/question_answering/local_retrieval_q
 # 사용 예:
 # pipeline = RAGPipeline()
 # result = pipeline.invoke("질문 내용")
+
+
+###### 시간복잡도 Issue로 HyDE 일단 보류했음. 정확도 측면 제대로 평가하면 쓸 생각.
+## embedding config - HyDE
+# hyde_prompt_template = """ 
+#     Write a passage in Korean to answer the #question in detail.
+
+#     #question : {question}
+#     #passage : ...
+# """
+
+# hyde_prompt = PromptTemplate(input_variables=["question"], template=hyde_prompt_template)
+
+# hyde_generation_chain = LLMChain(
+#     llm=llm, 
+#     prompt=hyde_prompt,
+# )
+
+# hydeembeddings = HypotheticalDocumentEmbedder(
+#     llm_chain=hyde_generation_chain,
+#     base_embeddings=embedding,
+# )
+

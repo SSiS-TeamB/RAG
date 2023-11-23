@@ -20,8 +20,8 @@ empty1, con7, empty2 = st.columns([0.3, 1.0, 0.3])
 
 # Settings for semantic_search using vectorstores of langchain
 # vs_info_dict = {"collection_name":"wf_schema", "persist_directory":"workspace/chroma_storage",}
-vs_info_dict = {"collection_name":"wf_schema_no_split", "persist_directory":"workspace/chroma_storage",}
-vector_store = ChromaVectorStore(**vs_info_dict)
+# vs_info_dict = {"collection_name":"wf_schema_no_split", "persist_directory":"workspace/chroma_storage",}
+# vector_store = ChromaVectorStore(**vs_info_dict)
 
 with con1:
     st.markdown("<h1 style='text-align: center; color: gray;'>검색 엔진 시스템</h1>", unsafe_allow_html=True)
@@ -46,11 +46,17 @@ with con3:
 collection_name = "wf_schema_split"
 persist_directory = "workspace/chroma_storage"
 
-vectorstore = ChromaVectorStore(**{
+#### Loading Vectorstore .......
+
+with st.spinner():
+    vectorstore = ChromaVectorStore(**{
     "collection_name":collection_name, 
     "persist_directory":persist_directory,
     "collection_metadata" : {"hnsw:space":"cosine"}
 })
+
+#### 이쪽에 spinner 넣어서 loading check
+
 
 ### button Event
 if query_text or btn_flag:
@@ -91,3 +97,11 @@ if query_text or btn_flag:
         # st.write(sp_str.join(doc.page_content for doc in results_vs))
         # print(results_vs)
 
+   
+        # print("There are", vectorstore._collection.count(), "in the collection.")
+        # results = run_search(search_query)
+
+        # for result in results :
+        #     st.title(f'**{result.metadata["title"]}**')
+        #     st.markdown(result.page_content)
+        #     st.write(result.metadata['tag'].split(','))

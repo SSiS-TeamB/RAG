@@ -10,7 +10,8 @@ import os
 
 class ChromaVectorStore:
     def __init__(self, **kwargs) -> None:
-        self.emb = EmbeddingLoader().load()
+        #일단 임시로
+        self.emb = EmbeddingLoader(model_name="workspace/dadt_epoch2_kha_tok", encode_kwargs = {'normalize_embeddings': True}).load()
         kwargs['embedding_function'] = self.emb
         self.vs = Chroma(**kwargs)
         self.vs_dir_path = kwargs['persist_directory']
@@ -21,10 +22,10 @@ class ChromaVectorStore:
         return
     
     def retrieve(self, query:str, is_sim_search=False) -> list:
-        """ VectorDB에 query(질문) 넣어서 나오는 답변 찾아오기.
+        """ VectorDB에 query(질문) 넣어서 나오는 답변 mmr 기반으로 찾아오기.
             *args
             query : string 형태로 VectorDB에 유사도 기반 검색할 때 사용하는 질문
-            is_sim_search : search 방식 선택(기본 mmr, True로 하면 similarity_search)
+            is_sim_search : search 방식 선택(기본 mmr, is_sim_search=True로 하면 similarity_search)
         """
         ### query - vector 변환
         print(query)
@@ -53,6 +54,8 @@ class ChromaVectorStore:
         return
 
     def load_docs(self, document_path:str, is_split=True, is_regex=True) -> None :
+        """ Get LangChain Document Object and split automatically. finally save Vectorstore at designated path... """
+
         doc_loader = BaseDBLoader(document_path)
         docs = doc_loader.load(is_split, is_regex)
         self.get_pickle(documents=docs, save_path=document_path) #get pickle file -> to Initiate BM25 Search and Save time, save list of Documents

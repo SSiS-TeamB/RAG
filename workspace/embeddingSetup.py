@@ -9,20 +9,19 @@ from sentence_transformers import SentenceTransformer
 
 
 class EmbeddingLoader:
-    def __init__(self, from_default_template:bool=True, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         """ Embedding model setting. 
-            :param from_default_template : 미리 생성해 놓은 모델 이름, SentenceTransformerEmbeddings 설정 불러오는 parameter.        
-            """
-        
-        if from_default_template:
-            kwargs.setdefault("model_name", "workspace/da_finetune_epoch_2")
-            kwargs.setdefault("model_kwargs", {'device': self._device_check()})
-            kwargs.setdefault("encode_kwargs", {'normalize_embeddings': True})
-        self.emb_kwargs = kwargs
+            
+            args
+                model_name: model name or path(HuggingFaceEmbeddings)
+                encode_kwargs: encoding kwargs from SentenceTransformer model kwargs
+        """
+        kwargs.setdefault("model_kwargs", {'device': self._device_check()})
+        self.kwargs = kwargs
         return
 
     def load(self) -> STE:
-        embedding = STE(**self.emb_kwargs)
+        embedding = STE(**self.kwargs)
         return embedding
     
     def _device_check(self) -> str: 
@@ -55,5 +54,6 @@ def s_bert_embedding_donwloader(model_name, save_path):
 
 ## test (안 되는 이유 -> deviceCheck 삭제하고 EmbeddingLoader 안에 통합해서 해결)
 
-# if __name__ == "__main__" :
-#     print(EmbeddingLoader().load())
+if __name__ == "__main__" :
+    # setup = EmbeddingLoader(from_default_template=False, model_name="workspace/dadt_epoch2_kha_tok", encode_kwargs = {'normalize_embeddings': True}).load()
+    setup = EmbeddingLoader(model_name="workspace/dadt_epoch2_kha_tok", encode_kwargs = {'normalize_embeddings': True})
