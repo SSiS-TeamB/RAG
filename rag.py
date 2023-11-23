@@ -1,3 +1,4 @@
+import re
 import os
 import pickle
 #api key(추가해서 쓰시오)
@@ -112,7 +113,20 @@ class RAGPipeline:
 
     @staticmethod
     def format_docs(docs):
-        return "\n\n\n".join(doc.page_content for doc in docs)
+        ## 어느 제도 부분에서 가져왔는지 나타내는 출처 : medata 활용해서 같이 출력
+        result = []
+        for doc in docs:
+            title_resource = doc.metadata
+            title_resource = str(title_resource).split(":")[1].lstrip()
+            title_resource = re.sub(pattern="}|'",repl="",string=title_resource)
+            title_resource = title_resource.split("\\")[4]+"_"+title_resource.split("\\")[-1]
+            content = doc.page_content 
+            # print(f"** 출처 ** : \n {title_resource}", end="\n\n")
+            # print(f"*** 제도내용 *** : \n {content}", end="\n\n")
+            unit_doc = content + f"\n\n 출처 : {title_resource}"
+            result.append(unit_doc)
+        
+        return "\n\n".join(doc for doc in result)
 
     def invoke(self, query):
         return self.rag_chain.invoke(query)
