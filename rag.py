@@ -1,6 +1,7 @@
 import os
 import re
 import pickle
+import pandas as pd
 #api key(추가해서 쓰시오)
 from workspace.settings import openai_api_key
 from workspace.analogicalPrompt import generateAnalogicalPrompt
@@ -13,6 +14,7 @@ from langchain.chains import LLMChain, HypotheticalDocumentEmbedder
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema import StrOutputParser
+from langchain.schema.document import Document
 
 ###### 시간복잡도 Issue로 HyDE 일단 보류했음. 정확도 측면 제대로 평가하면 쓸 생각.
 ## embedding config - HyDE
@@ -103,23 +105,71 @@ class RAGPipeline:
             | StrOutputParser()
         )
 
+    ## 준호꺼 + url 추가한거
     @staticmethod
-    def format_docs(docs):
-        
+    def format_docs(docs:list[Document]):
         ## 어느 제도 부분에서 가져왔는지 나타내는 출처 : medata 활용해서 같이 출력
+        sep_str = "\n\n"
         result = []
-        for doc in docs:
-            title_resource = doc.metadata
-            title_resource = str(title_resource).split(":")[1].lstrip()
-            title_resource = re.sub(pattern="}|'",repl="",string=title_resource)
-            title_resource = title_resource.split("\\")[4]+"_"+title_resource.split("\\")[-1]
-            content = doc.page_content 
-            # print(f"** 출처 ** : \n {title_resource}", end="\n\n")
-            # print(f"*** 제도내용 *** : \n {content}", end="\n\n")
-            unit_doc = content + f"\n\n 출처 : {title_resource}"
-            result.append(unit_doc)
         
-        return "\n\n".join(doc for doc in result)
+        meta_df = pd.read_excel('workspace/meta_excel.xlsx',usecols=['source','url'])
+
+    
+        for doc in docs:
+            ### 이 부분도 수정해야 함.. (key : value로)
+            # meta_source : 메타데이터 중 참고한 md 파일 명 
+            metadata = doc.metadata
+            meta_source = list(metadata.values())[0]
+            meta_source_split = meta_source.split("\\")
+            meta_source = "\\".join(meta_source_split[2:])
+            
+            # meta_url : 제도와 관련된 url
+            # col1 : source 와 col2 : url 로 저장되어있는 excecl 파일을 dataframe화 하여
+            # 제도와 source가 일치하면 해당 행의 url을 가져오기
+            for i in range(len(meta_df)):
+                if meta_df.loc[i,'source'] == meta_source:
+                    meta_url = meta_df.loc[i,'url']
+                    break
+                else : 
+                    continue
+
+            #  content : 문서 내용
+            content = doc.page_content 
+            content_splitted = content.split('\n\n')
+            title = content_splitted[0]
+
+            displayed_text = " ".join(content_splitted[1:])[:300]
+            displayed_text = re.sub('\n+', ' ', displayed_text)
+            # if len(displayed_text) > 300:
+            #     displayed_text = displayed_text[297]+' ...'
+            displayed_text += " ..."
+
+            content = f"[{title}]\n\n {displayed_text}"
+            formatted_document = content + f"\n\n 출처 : {meta_source}" + f"\n\n url : {meta_url}"
+
+            result.append(formatted_document)
+        
+        return sep_str.join(doc for doc in result)
+    
+    
+    ## 내꺼
+    # @staticmethod
+    # def format_docs(docs):
+        
+    #     ## 어느 제도 부분에서 가져왔는지 나타내는 출처 : medata 활용해서 같이 출력
+    #     result = []
+    #     for doc in docs:
+    #         title_resource = doc.metadata
+    #         title_resource = str(title_resource).split(":")[1].lstrip()
+    #         title_resource = re.sub(pattern="}|'",repl="",string=title_resource)
+    #         title_resource = title_resource.split("\\")[4]+"_"+title_resource.split("\\")[-1]
+    #         content = doc.page_content 
+    #         # print(f"** 출처 ** : \n {title_resource}", end="\n\n")
+    #         # print(f"*** 제도내용 *** : \n {content}", end="\n\n")
+    #         unit_doc = content + f"\n\n 출처 : {title_resource}"
+    #         result.append(unit_doc)
+        
+    #     return "\n\n".join(doc for doc in result)
         
 
 
