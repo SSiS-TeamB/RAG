@@ -47,7 +47,6 @@ class BaseDBLoader:
 
     def _result_to_regex(self, doc_list:list[Document]) -> list[Document]:
         regex = '([^가-힣0-9a-zA-Z.,·•%↓()\s\\\])'
-
         result = []
         for document in doc_list:
             sub_str = re.sub(pattern=regex, repl="", string=document.page_content)

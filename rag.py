@@ -97,10 +97,10 @@ class RAGPipeline:
         for doc in docs:
             ### 이 부분도 수정해야 함.. (key : value로)
             metadata = doc.metadata
-            title_resource = str(metadata).split(":")[1].lstrip()
-            title_resource = re.sub(pattern="}|'", repl="", string=title_resource)
-            title_resource = title_resource.split("\\")[4]+"_"+title_resource.split("\\")[-1]
-            
+            meta_source = list(metadata.values())[0]
+            meta_source_split = meta_source.split("\\")
+            meta_source_result = "\\".join(meta_source_split[2:])
+
             content = doc.page_content 
             content_splitted = content.split('\n\n')
             title = content_splitted[0]
@@ -112,7 +112,7 @@ class RAGPipeline:
             displayed_text += " ..."
 
             content = f"[{title}]\n\n {displayed_text}"
-            formatted_document = content + f"\n\n 출처 : {title_resource}"
+            formatted_document = content + f"\n\n 출처 : {meta_source_result}"
             result.append(formatted_document)
         
         return sep_str.join(doc for doc in result)
@@ -130,10 +130,29 @@ https://python.langchain.com/docs/use_cases/question_answering/vector_db_qa
 https://js.langchain.com/docs/modules/chains/popular/vector_db_qa/
 https://python.langchain.com/docs/use_cases/question_answering/local_retrieval_qa
 """
-# 사용 예:
-# pipeline = RAGPipeline()
-# result = pipeline.invoke("질문 내용")
 
+
+# 사용 예:
+if __name__ == "__main__":
+
+
+    collection_name = "wf_schema_split"
+    persist_directory = "workspace/chroma_storage"
+
+    vectorstore = ChromaVectorStore(**{
+        "collection_name":collection_name, 
+        "persist_directory":persist_directory,
+        "collection_metadata" : {"hnsw:space":"cosine"}
+    })
+
+    model = "gpt-4-1106-preview"
+    rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
+
+    retrieval_result = rag_pipeline.retrieve("20대 청년 지원")
+    
+    for document in retrieval_result :
+        # print(list(document.metadata.values())[0].split("\\")[-1])
+        print(document.page_content.split("\n\n")[0])
 
 ###### 시간복잡도 Issue로 HyDE 일단 보류했음. 정확도 측면 제대로 평가하면 쓸 생각.
 ## embedding config - HyDE
