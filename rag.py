@@ -112,7 +112,7 @@ class RAGPipeline:
         sep_str = "\n\n"
         result = []
         
-        meta_df = pd.read_excel('workspace/meta_excel.xlsx',usecols=['source','url'])
+        meta_df = pd.read_csv('workspace/meta_table.csv',usecols=['source','url'])
 
     
         for doc in docs:
