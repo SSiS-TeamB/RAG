@@ -32,51 +32,59 @@ st.info('예시: "20대 취업관련 제도"')
 
 #Select gpt version
 with st.container():
-    st.subheader("⚙️검색 모드 선택")
-    option_speed, option_accuracy = st.columns([0.2, 0.8])
-    gpt_3_5 = option_speed.button("빠른 검색")
-    gpt_4 = option_accuracy.button("정확한 검색")
-
-    if gpt_3_5:
+    st.subheader("⚙️검색 모드 설정")
+    option = st.selectbox(
+        "GPT version",
+        ('빠른 검색', '정확한 검색'),
+        label_visibility="hidden",
+    )
+    # option_speed, option_accuracy = st.columns([0.2, 0.8])
+    # gpt_3_5 = option_speed.button("빠른 검색")
+    # gpt_4 = option_accuracy.button("정확한 검색")
+    if option == '빠른 검색':
         model = "gpt-3.5-turbo-1106"
         search_name = "빠른 검색"
-        option = True
-    elif gpt_4:
+    else:
         model = "gpt-4-1106-preview"
         search_name = "정확한 검색"
-        option = True
-    else:
-        st.error('검색 모드를 선택하세요.', icon="🚨")
-        search_name = "검색 모드를 선택 하세요."
-        option = False
     st.divider()
 
 #Enter the query
 query_text = st.text_input("Search Bar", placeholder="검색어를 입력하세요.", label_visibility="hidden")
-search_buttion = st.button(search_name, use_container_width=True, disabled=(option is False))
+search_button = st.button(search_name, use_container_width=True)    
 
 #button Event
-if query_text or search_buttion:
-    # Settings for semantic_search using vectorstores of langchain
-    collection_name = "wf_schema_split"
-    persist_directory = "workspace/chroma_storage"            
-
-    vectorstore = ChromaVectorStore(**{
-    "collection_name":collection_name, 
-    "persist_directory":persist_directory,
-    "collection_metadata" : {"hnsw:space":"cosine"}
-    })
-
-    # semantic_search using "chromadb" module
-    # results = chroma_client.semantic_search([query_text], 3)
+if query_text or search_button:
     
-    ## RAG result
-    rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
-    results_rag = rag_pipeline.invoke(query_text)
+    progress_text = f'Finding about "{query_text}"...'
+    with st.spinner(progress_text):
+        st.write("검색 중")
+        
+        # Settings for semantic_search using vectorstores of langchain
+        collection_name = "wf_schema_split"
+        persist_directory = "workspace/chroma_storage"            
 
-    # semantic_search using vectorstores of langchain
-    results_vs = rag_pipeline.retrieve(query_text)
-    
+        vectorstore = ChromaVectorStore(**{
+        "collection_name":collection_name, 
+        "persist_directory":persist_directory,
+        "collection_metadata" : {"hnsw:space":"cosine"}
+        })
+
+        # semantic_search using "chromadb" module
+        # results = chroma_client.semantic_search([query_text], 3)
+        
+        ## RAG result
+        rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
+        results_rag = rag_pipeline.invoke(query_text)
+        st.write("관련문서 검색 완료. 답변 생성중")
+        time.sleep(2)
+        # semantic_search using vectorstores of langchain
+        results_vs = rag_pipeline.retrieve(query_text)
+        st.write("답변 생성 완료")
+        time.sleep(1)
+        
+        st.success("검색 완료!")
+        
     #Get Answer
     with st.container():
         st.divider()
@@ -84,7 +92,7 @@ if query_text or search_buttion:
         st.markdown(results_rag)
         st.divider()
         st.markdown("## 관련 문서")
-        st.markdown(RAGPipeline.format_docs(results_vs))
+        st.markdown(RAGPipeline.format_docs(results_vs))         
 
 # # launch
 # if __name__  == "__main__" :
