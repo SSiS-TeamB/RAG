@@ -14,5 +14,7 @@ workspace/chroma_storage
 ### document pickle file
 workspace/document.pkl
 
-#### test
+### test
 dependencyIngection.ipynb
+asyncTestLab.ipynb
+dataparsing.py

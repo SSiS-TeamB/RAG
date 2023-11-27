@@ -19,12 +19,14 @@ from langchain.storage._lc_store import create_kv_docstore
 from chromaVectorStore import ChromaVectorStore
 from workspace.mdLoader import BaseDBLoader 
 
+from datetime import datetime
+
 #api key settings
 os.environ["OPENAI_API_KEY"] = openai_api_key
 
 class RAGPipeline:
     def __init__(self, model, vectorstore, embedding):
-        self.llm = ChatOpenAI(model=model, temperature=0.2)
+        self.llm = ChatOpenAI(model=model, temperature=0.1)
         self.vectorstore = vectorstore
         self.embedding = embedding
         
@@ -134,7 +136,7 @@ https://python.langchain.com/docs/use_cases/question_answering/local_retrieval_q
 
 # 사용 예:
 if __name__ == "__main__":
-
+    start_time = datetime.now()
 
     collection_name = "wf_schema_split"
     persist_directory = "workspace/chroma_storage"
@@ -145,14 +147,15 @@ if __name__ == "__main__":
         "collection_metadata" : {"hnsw:space":"cosine"}
     })
 
-    model = "gpt-4-1106-preview"
+    model = "gpt-3.5-1106"
+    # model = "gpt-4-1106-preview"
     rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
 
     retrieval_result = rag_pipeline.retrieve("20대 청년 지원")
-    
-    for document in retrieval_result :
-        # print(list(document.metadata.values())[0].split("\\")[-1])
-        print(document.page_content.split("\n\n")[0])
+    print(retrieval_result)
+
+    end_time = datetime.now()
+    print((end_time-start_time).total_seconds(),"seconds.") ### timecheck 11-26:
 
 ###### 시간복잡도 Issue로 HyDE 일단 보류했음. 정확도 측면 제대로 평가하면 쓸 생각.
 ## embedding config - HyDE

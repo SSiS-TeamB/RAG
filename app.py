@@ -88,7 +88,7 @@ if query_text or btn_flag:
 
     with con5:
         st.write("## 답변")
-        st.markdown(results_rag)
+        st.write(results_rag, unsafe_allow_html=True)
 
     with con6:
         st.markdown("## 관련 문서")
