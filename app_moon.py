@@ -55,7 +55,6 @@ search_button = st.button(search_name, use_container_width=True)
 
 #button Event
 if query_text or search_button:
-    
     progress_text = f'Finding about "{query_text}"...'
     with st.spinner(progress_text):
         st.write("검색 중")
