@@ -1,3 +1,19 @@
+### tests
 /test_jack
-/workspace/settings.py
-/workspace/__pycache__
+
+### api key
+workspace/settings.py
+
+### __pycache__
+__pycache__
+workspace/__pycache__
+
+### chromastorage
+workspace/chroma_storage
+
+### document pickle file
+workspace/document.pkl
+
+### model
+workspace/da_finetune_epoch_2
+workspace/dadt_epoch2_kha_tok
