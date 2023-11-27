@@ -63,7 +63,7 @@ if query_text or btn_flag:
     # semantic_search using "chromadb" module
     # results = chroma_client.semantic_search([query_text], 3)
 
-    ## RAG result
+    ## RAG result   
     model = "gpt-4-1106-preview"
     # model = "gpt-3.5-turbo-1106"
     rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
