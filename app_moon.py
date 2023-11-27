@@ -18,13 +18,12 @@ layout="centered",
 initial_sidebar_state="collapsed",
 )
 
-backgroundColor = "#F0F0F0"
 title = '''<h1 style='text-align: center'>복지 정보 검색 서비스</h1><br>
 <center>나에게 딱 맞는 복지 정보<br>
 이제는 누구나 쉽게, 내 마음대로 검색할 수 있어요!</center><br>
 '''
 st.markdown(title, unsafe_allow_html=True)
-st.divider()
+st.subheader("", divider='blue')
 
 #Query example for user
 st.subheader("📌이렇게 검색해보세요!")
@@ -32,11 +31,12 @@ st.info('예시: "20대 취업관련 제도"')
 
 #Select gpt version
 with st.container():
+    st.write("")
     st.subheader("⚙️검색 모드 설정")
     option = st.selectbox(
-        "GPT version",
+        "더 정확한 검색은 조금 느릴 수 있어요.",
         ('빠른 검색', '정확한 검색'),
-        label_visibility="hidden",
+        label_visibility="visible",
     )
     # option_speed, option_accuracy = st.columns([0.2, 0.8])
     # gpt_3_5 = option_speed.button("빠른 검색")
@@ -85,13 +85,23 @@ if query_text or search_button:
         st.success("검색 완료!")
         
     #Get Answer
-    with st.container():
-        st.divider()
-        st.subheader(f"{search_name} 결과")
+    answer, docs = st.tabs([f"{search_name} 결과", "관련 제도"])
+    with answer:
+        st.subheader(f'''
+                    "{query_text}"에 대한 **:blue[{search_name}]** 결과입니다.''')
+        st.write("")
         st.markdown(results_rag)
-        st.divider()
-        st.markdown("## 관련 문서")
-        st.markdown(RAGPipeline.format_docs(results_vs))         
+    with docs:
+        st.subheader(f'"{query_text}" 관련 복지 제도입니다.')
+        st.markdown(RAGPipeline.format_docs(results_vs))
+    # with st.container():
+    #     st.divider()
+    #     st.subheader(f"{search_name} 결과")
+    #     st.markdown(results_rag)
+    #     st.divider()
+    #     st.markdown("## 관련 문서")
+    #     st.markdown(RAGPipeline.format_docs(results_vs))
+             
 
 # # launch
 # if __name__  == "__main__" :
