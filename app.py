@@ -35,19 +35,12 @@ with con1:
 #    st.header("Header")
 #    st.image("https://static.streamlit.io/examples/cat.jpg", use_column_width=True)
 
-with con2:
-    query_text = st.text_input('검색하셈', label_visibility='collapsed')
-    # query_text = st.text_area("이건 여러줄 입력")
-
-with con3:
-    btn_flag = st.button("click")
-
 # Settings for semantic_search using vectorstores of langchain
 collection_name = "wf_schema_split"
 persist_directory = "workspace/chroma_storage"
 
 #### Loading Vectorstore .......
-
+#### 이쪽에 spinner 넣어서 loading check
 with st.spinner():
     vectorstore = ChromaVectorStore(**{
     "collection_name":collection_name, 
@@ -55,37 +48,78 @@ with st.spinner():
     "collection_metadata" : {"hnsw:space":"cosine"}
 })
 
-#### 이쪽에 spinner 넣어서 loading check
 
+with con2:
+    query_text = st.text_input('검색하셈', label_visibility='collapsed')
+    # query_text = st.text_area("이건 여러줄 입력")
+
+with con3:
+    btn_flag = st.button("click")
 
 ### button Event
 if query_text or btn_flag:
     # semantic_search using "chromadb" module
     # results = chroma_client.semantic_search([query_text], 3)
 
-    ## RAG result
-    # model = "gpt-4-1106-preview"
-    model = "gpt-3.5-turbo-1106"
-    rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
-    results_rag = rag_pipeline.invoke(query_text)
+ 
 
-    # semantic_search using vectorstores of langchain
-    results_vs = rag_pipeline.retrieve(query_text)
-
+    
     with con4:
-        # progress bar
         progress_text = f'Finding about "{query_text}"...'
-        my_bar = st.progress(0, text=progress_text)
+        with st.status(progress_text, expanded=True) as status:
+            st.write("검색 중")
+            model = "gpt-3.5-turbo-1106"
+            rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
+            if rag_pipeline:
+                pass
+            results_rag = rag_pipeline.invoke(query_text)
+            st.write("관련문서 검색 완료. 답변 생성중")
+            time.sleep(2)
+            if results_rag:
+                pass
+            results_vs = rag_pipeline.retrieve(query_text)
+            st.write("답변 생성 완료")
+            time.sleep(1)
+            if results_vs:
+                pass
+            status.update(label="검색 완료!", state="complete", expanded=False)
+        # progress bar
+        # progress_text = f'Finding about "{query_text}"...'
+        # my_bar = st.progress(0, text=progress_text)
+        ## RAG result
+        # model = "gpt-4-1106-preview"
+        # model = "gpt-3.5-turbo-1106"
+        # rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
+        # st.toast('답변 생성중!')    
+        # for i in range(90):
+        #     time.sleep(0.01)
+        #     if rag_pipeline:
+        #         my_bar.progress(i+1, text=progress_text)
 
-        for i in range(100):
-            time.sleep(0.01)
-            my_bar.progress(i+1, text=progress_text)
-        time.sleep(1)
-        my_bar.empty()
+        # st.toast('조금만 더 기다려주세요!')
+        # # results_rag = rag_pipeline.invoke(query_text)
+        # for i in range(90,95,1):
+        #     time.sleep(0.01)
+        #     if results_rag:
+        #         my_bar.progress(i+1, text=progress_text)
+        # # semantic_search using vectorstores of langchain
+        # # results_vs = rag_pipeline.retrieve(query_text)
+        # for i in range(95,100,1):
+        #     time.sleep(0.01)
+        #     if results_vs:
+        #         my_bar.progress(i+1, text=progress_text)
+        
+        # st.toast('끝!', icon='🎉')
+        # time.sleep(1)
+        # my_bar.empty()
 
         # st.subheader('검색 결과')
         st.markdown("<h2 style='text-align: left; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
+    
+    
+    
 
+    
     with con5:
         st.write("## 답변")
         st.write(results_rag, unsafe_allow_html=True)
