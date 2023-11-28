@@ -5,6 +5,7 @@ from PIL import Image
 # from chromaClient import ChromaClient
 from chromaVectorStore import ChromaVectorStore
 from rag import RAGPipeline
+import time
 
 # def launch():
     # my_bar = st.progress(0, text="검색 중입니다. 잠시만 기다려주세요.") -> 검색 버튼 누르고 바로 실행
@@ -17,21 +18,20 @@ page_icon="✨",
 layout="centered",
 initial_sidebar_state="collapsed",
 )
+#Image
+img1, img2 = st.columns([0.25,0.7])
+with img1:
+    img_ssis = Image.open('image/ssis_logo.png')
+    img1.image(img_ssis, width=180)
+with img2:
+    img_BL = Image.open('image/bigleader_logo.png')
+    img2.image(img_BL, width=110)
 #Title
 title = '''<h1 style='text-align: center'>복지 정보 검색 서비스</h1><br>
 <center>나에게 딱 맞는 복지 정보<br>
 이제는 누구나 쉽게, 내 마음대로 검색할 수 있어요!</center><br>
 '''
 st.markdown(title, unsafe_allow_html=True)
-#Image
-img1, img2 = st.columns(2)
-with img1:
-    img_ssis = Image.open('image/ssis_logo.png')
-    img1.image(img_ssis, use_column_width=True)
-with img2:
-    img_BL = Image.open('image/ssis_logo.png')
-    img1.image(img_BL, use_column_width=True)
-    img_BL = Image.open('image/bigleader_logo.png')
 st.subheader("", divider='blue')
 
 #Query example for user
@@ -63,12 +63,13 @@ query_text = st.text_input("Search Bar", placeholder="검색어를 입력하세�
 search_button = st.button(search_name, use_container_width=True)    
 
 #button Event
-if query_text or search_button:
+if query_text and search_button:
+    start_time = time.time()
     progress_text = f'Finding about "{query_text}"...'
     with st.spinner(progress_text):
         placeholder = st.empty()
-        a = "검색중"
-        placeholder.text(a)
+        a = "  검색 중"
+        placeholder.info(a, icon='⏳')
         
         # Settings for semantic_search using vectorstores of langchain
         collection_name = "wf_schema_split"
@@ -86,16 +87,18 @@ if query_text or search_button:
         ## RAG result
         rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
         results_rag = rag_pipeline.invoke(query_text)
-        a = "관련문서 검색 완료. 답변 생성중"
-        placeholder.text(a)
-        time.sleep(2)
+        a = "  답변 생성 중"
+        placeholder.info(a, icon='⌛')
+        time.sleep(1)
         # semantic_search using vectorstores of langchain
         results_vs = rag_pipeline.retrieve(query_text)
-        a = "답변 생성 완료"
-        placeholder.text(a)
+        a = "  답변 생성 완료"
+        placeholder.info(a, icon='💡')
         time.sleep(1)
         placeholder.empty()
-        st.success("검색 완료!")
+        placeholder.success("  검색 완료!", icon='✅')
+        time.sleep(1)
+        placeholder.empty()
         
     #Get Answer
     answer, docs = st.tabs([f"{search_name} 결과", "관련 제도"])
@@ -107,6 +110,12 @@ if query_text or search_button:
     with docs:
         st.subheader(f'"{query_text}" 관련 복지 제도입니다.')
         st.markdown(RAGPipeline.format_docs(results_vs))
+        
+    end_time = time.time()-start_time
+    
+    st.markdown(f"실행 시간: {end_time:.2f}초")
+    
+    
     # with st.container():
     #     st.divider()
     #     st.subheader(f"{search_name} 결과")
