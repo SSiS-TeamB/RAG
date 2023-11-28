@@ -70,7 +70,7 @@ def main() :
         st.write("")
         st.subheader("⚙️답변 생성 AI 모드 설정")
         option = st.selectbox(
-            "더 정확한 답변 생성은 조금 느릴 수 있어요.",
+            "정확한 답변 생성은 조금 느릴 수 있어요.",
             ('빠른 생성', '정확한 생성'),
             label_visibility="visible",
         )
@@ -107,8 +107,7 @@ def main() :
     vectorstore = vectorstore_config()
 
     #ON Button Event
-    if query or search_button:
-        model = "gpt-4-1106-preview"
+    if query and search_button:
         pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
 
         invoke_empty.markdown("실행 중 ... ")
@@ -124,13 +123,13 @@ def main() :
                 if task_name == 'Invoke':
                     invoke_empty.empty()
                     invoke_empty.markdown(f'{result} \n\n 실행 시간: {elapsed_time:.2f}초', unsafe_allow_html=True)
-
                 else:
                     empty = retrieve_container.empty()
-                    empty.markdown(f'{RAGPipeline.format_docs(result)} \n\n 실행 시간: {elapsed_time:.2f}초')
-            for t in executor._threads:
-                add_script_run_ctx(t)
-        st.success("검색 완료!")
+                    empty.markdown(f'{RAGPipeline.format_docs(result)} \n\n 실행 시간: {elapsed_time:.2f}초', unsafe_allow_html=True)
+
+            # for t in executor._threads:
+            #     add_script_run_ctx(t)
+        st.toast('검색 완료!', icon="✅")
 
         # progress_text = f'Finding about "{query_text}"...'
         # with st.spinner(progress_text):

@@ -56,7 +56,7 @@ class RAGPipeline:
             docstore=store,
             child_splitter=child_splitter,
             search_type="similarity_score_threshold", 
-            search_kwargs={"score_threshold":0.1, "k":7},
+            search_kwargs={"score_threshold":0.1, "k":5},
         )
         ## check cachefile exsists 
         if not list(store.yield_keys()) :
