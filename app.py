@@ -9,6 +9,7 @@ from PIL import Image
 ### MultiThread로 실행하기 위해 실행요소만 따로 뺐다.
 ## RAGPipeline.invoke, RAGPipeline.retrieve -> 실행 후 time check
 def run_pipeline_task(query, task_func):
+    """ MultiThreading API calling Executor """
     start_time = time.time()
     try:
         result = task_func(query)
@@ -41,8 +42,14 @@ def page_config():
         img_BL = Image.open('image/bigleader_logo.png')
         img2.image(img_BL, use_column_width=True)
     st.subheader("", divider='blue')
+    #Query example for user
+    st.subheader("📌이렇게 검색해보세요!")
+    st.info('예시: "20대 취업관련 제도"')
+
+    return
 
 def vectorstore_config():
+    """ VectorStore Config """
     # Settings for semantic_search using vectorstores of langchain
     collection_name = "wf_schema_split"
     persist_directory = "workspace/chroma_storage"            
@@ -58,13 +65,7 @@ def vectorstore_config():
 def main() :
     #load page config
     page_config()
-
-    #Query example for user
-    st.subheader("📌이렇게 검색해보세요!")
-    st.info('예시: "20대 취업관련 제도"')
-
-    ##### CONTAINERS
-    #LLM container
+    ##### LLM container
     llm_selector = st.container()
     with llm_selector:
         st.write("")
@@ -83,7 +84,6 @@ def main() :
         else:
             model = "gpt-4-1106-preview"
             search_name = "정확한 생성"
-        
     ##### QUERY CONFIG
     query_container = st.container()
     with query_container:
@@ -91,7 +91,6 @@ def main() :
         query = st.text_input("Search Bar", placeholder="검색어를 입력하세요.", label_visibility="hidden")
         search_button = st.button(search_name, use_container_width=True)
         st.divider()
-    
     ##### METHOD RESULT CONTAINER
     #invoke container
     invoke_container = st.container()
@@ -105,7 +104,6 @@ def main() :
         st.markdown("### 관련 문서")  
     ##### VECTORSTORE CONFIG
     vectorstore = vectorstore_config()
-
     #ON Button Event
     if query and search_button:
         pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
@@ -161,7 +159,6 @@ def main() :
         # with docs:
         #     st.subheader(f'"{query_text}" 관련 복지 제도입니다.')
         #     st.markdown(RAGPipeline.format_docs(results_vs))
-
 
 #### run -> streamlit run app.py
 if __name__ == "__main__":
