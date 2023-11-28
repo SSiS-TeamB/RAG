@@ -130,6 +130,7 @@ def main() :
                     empty.markdown(f'{RAGPipeline.format_docs(result)} \n\n 실행 시간: {elapsed_time:.2f}초')
             for t in executor._threads:
                 add_script_run_ctx(t)
+        st.success("검색 완료!")
 
         # progress_text = f'Finding about "{query_text}"...'
         # with st.spinner(progress_text):
