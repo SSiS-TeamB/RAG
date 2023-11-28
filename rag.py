@@ -18,7 +18,6 @@ from langchain.storage._lc_store import create_kv_docstore
 
 from chromaVectorStore import ChromaVectorStore
 from workspace.mdLoader import BaseDBLoader 
-
 from datetime import datetime
 
 #api key settings
@@ -26,7 +25,7 @@ os.environ["OPENAI_API_KEY"] = openai_api_key
 
 class RAGPipeline:
     def __init__(self, model, vectorstore, embedding):
-        self.llm = ChatOpenAI(model=model, temperature=0.1)
+        self.llm = ChatOpenAI(model=model, temperature=0.1, streaming=True)
         self.vectorstore = vectorstore
         self.embedding = embedding
         
@@ -40,7 +39,8 @@ class RAGPipeline:
             self.documents = pickle.load(file)
 
         child_splitter = RecursiveCharacterTextSplitter(
-            separators=["\n\n", "\n", " ", ""],
+            # separators=["\n\n", "\n", " ", ""],
+            separators=["\n\n",],
             chunk_size=200,
             chunk_overlap=10,
             is_separator_regex=False,
@@ -56,33 +56,18 @@ class RAGPipeline:
             docstore=store,
             child_splitter=child_splitter,
             search_type="similarity_score_threshold", 
-            search_kwargs={"score_threshold":0.3, "k":5},
+            search_kwargs={"score_threshold":0.1, "k":7},
         )
-
         ## check cachefile exsists 
         if not list(store.yield_keys()) :
             dbloader = BaseDBLoader(path_db="workspace/markdownDB/")
             self.parent_retreiver.add_documents(dbloader.load(is_split=False, is_regex=True))
-
-        # Vector Search Retriever
-        # self.chroma_retriever = self.vectorstore.as_retriever(search_type='mmr', search_kwargs={"k":5})
-
         # BM25 Retriever
         self.bm25_retriever = BM25Retriever.from_documents(documents=self.documents)
-        self.bm25_retriever.k = 3
-
+        self.bm25_retriever.k = 5
         # Ensemble
         self.ensemble_retriever = EnsembleRetriever(retrievers=[self.bm25_retriever, self.parent_retreiver], weights=[0.3, 0.7])
-
-        # RAG 체인 구성 With-Analogical Prompting
-        # self.rag_chain = (
-        #     {"context": self.ensemble_retriever | self.format_docs, "question": RunnablePassthrough()}
-        #     | generateAnalogicalPrompt()
-        #     | self.llm
-        #     | StrOutputParser()
-        # )
-        
-        # Non-Analogical Prompting
+        # RAG Chain
         self.rag_chain = (
             {"context": self.ensemble_retriever | self.format_docs, "question": RunnablePassthrough()}
             | get_normal_prompt()
@@ -99,13 +84,8 @@ class RAGPipeline:
         for doc in docs:
             ### 이 부분도 수정해야 함.. (key : value로)
             metadata = doc.metadata
-            meta_source = list(metadata.values())[0]
-            meta_source_split = meta_source.split("\\")
-            meta_source_result = "\\".join(meta_source_split[2:])
-
             content = doc.page_content 
             content_splitted = content.split('\n\n')
-            title = content_splitted[0]
 
             displayed_text = " ".join(content_splitted[1:])[:300]
             displayed_text = re.sub('\n+', ' ', displayed_text)
@@ -113,26 +93,25 @@ class RAGPipeline:
             #     displayed_text = displayed_text[297]+' ...'
             displayed_text += " ..."
 
-            content = f"[{title}]\n\n {displayed_text}"
-            formatted_document = content + f"\n\n 출처 : {meta_source_result}"
+            content = f"[{metadata['title']}]\n\n {displayed_text}"
+            formatted_document = content + f"\n\n {metadata['tag']}"
+            #### metadata 붙인거 추가하기.......
             result.append(formatted_document)
         
         return sep_str.join(doc for doc in result)
 
     def invoke(self, query):
-        return self.rag_chain.invoke(query)
+        result = self.rag_chain.invoke(query)
+        return result
     
     def retrieve(self, query):
-        return self.ensemble_retriever.get_relevant_documents(query)
-        # return self.ensemble_retriever.invoke(query)
-
-
+        result = self.ensemble_retriever.get_relevant_documents(query)
+        return result
 """ ref
 https://python.langchain.com/docs/use_cases/question_answering/vector_db_qa
 https://js.langchain.com/docs/modules/chains/popular/vector_db_qa/
 https://python.langchain.com/docs/use_cases/question_answering/local_retrieval_qa
 """
-
 
 # 사용 예:
 if __name__ == "__main__":
@@ -147,13 +126,13 @@ if __name__ == "__main__":
         "collection_metadata" : {"hnsw:space":"cosine"}
     })
 
-    model = "gpt-3.5-1106"
+    model = "gpt-3.5-turbo-1106"
     # model = "gpt-4-1106-preview"
     rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
 
-    retrieval_result = rag_pipeline.retrieve("20대 청년 지원")
+    retrieval_result = rag_pipeline.invoke("우울한 청년들에게 지원할 수 있는 서비스")
     print(retrieval_result)
-
+    print(len(retrieval_result))
     end_time = datetime.now()
     print((end_time-start_time).total_seconds(),"seconds.") ### timecheck 11-26:
 

@@ -1,20 +1,12 @@
 ### api key
 workspace/settings.py
-
 ### model
 workspace/da_finetune_epoch_2
 workspace/dadt_epoch2_kha_tok
-
 ### __pycache__
 __pycache__
 workspace/__pycache__
-
 ### chromastorage
 workspace/chroma_storage
 ### document pickle file
 workspace/document.pkl
-
-### test
-dependencyIngection.ipynb
-asyncTestLab.ipynb
-dataparsing.py
