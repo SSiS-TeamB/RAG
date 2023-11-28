@@ -66,7 +66,9 @@ search_button = st.button(search_name, use_container_width=True)
 if query_text or search_button:
     progress_text = f'Finding about "{query_text}"...'
     with st.spinner(progress_text):
-        st.write("검색 중")
+        placeholder = st.empty()
+        a = "검색중"
+        placeholder.text(a)
         
         # Settings for semantic_search using vectorstores of langchain
         collection_name = "wf_schema_split"
@@ -84,13 +86,15 @@ if query_text or search_button:
         ## RAG result
         rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
         results_rag = rag_pipeline.invoke(query_text)
-        st.write("관련문서 검색 완료. 답변 생성중")
+        a = "관련문서 검색 완료. 답변 생성중"
+        placeholder.text(a)
         time.sleep(2)
         # semantic_search using vectorstores of langchain
         results_vs = rag_pipeline.retrieve(query_text)
-        st.write("답변 생성 완료")
+        a = "답변 생성 완료"
+        placeholder.text(a)
         time.sleep(1)
-        
+        placeholder.empty()
         st.success("검색 완료!")
         
     #Get Answer
