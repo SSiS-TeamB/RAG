@@ -130,7 +130,7 @@ if __name__ == "__main__":
     # model = "gpt-4-1106-preview"
     rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
 
-    retrieval_result = rag_pipeline.invoke("우울한 청년들에게 지원할 수 있는 서비스")
+    retrieval_result = rag_pipeline.retrieve("우울한 청년들에게 지원할 수 있는 서비스")
     print(retrieval_result)
     print(len(retrieval_result))
     end_time = datetime.now()
