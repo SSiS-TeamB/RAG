@@ -17,12 +17,21 @@ page_icon="✨",
 layout="centered",
 initial_sidebar_state="collapsed",
 )
-
+#Title
 title = '''<h1 style='text-align: center'>복지 정보 검색 서비스</h1><br>
 <center>나에게 딱 맞는 복지 정보<br>
 이제는 누구나 쉽게, 내 마음대로 검색할 수 있어요!</center><br>
 '''
 st.markdown(title, unsafe_allow_html=True)
+#Image
+img1, img2 = st.columns(2)
+with img1:
+    img_ssis = Image.open('image/ssis_logo.png')
+    img1.image(img_ssis, use_column_width=True)
+with img2:
+    img_BL = Image.open('image/ssis_logo.png')
+    img1.image(img_BL, use_column_width=True)
+    img_BL = Image.open('image/bigleader_logo.png')
 st.subheader("", divider='blue')
 
 #Query example for user
