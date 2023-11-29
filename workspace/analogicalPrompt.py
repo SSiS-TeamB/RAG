@@ -33,7 +33,7 @@ def generateAnalogicalPrompt() -> PipelinePromptTemplate:
 
     return prompt_pipeline
 
-def get_normal_prompt() -> PromptTemplate:
+def get_normal_prompt() -> PromptTemplate:    
     """ get normal RAG template -> context : query(question). """
     prompt_template = PromptTemplate.from_template("""
     You are an expert on welfare system. 
