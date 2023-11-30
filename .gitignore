@@ -1,8 +1,7 @@
 ### api key
 workspace/settings.py
 ### model
-workspace/da_finetune_epoch_2
-workspace/dadt_epoch2_kha_tok
+workspace/model
 ### __pycache__
 __pycache__
 workspace/__pycache__

@@ -2,7 +2,7 @@ import re
 import os
 import pickle
 #api key(추가해서 쓰시오)
-from workspace.settings import openai_api_key
+from workspace.settings import OPENAI_API_KEY
 from workspace.analogicalPrompt import generateAnalogicalPrompt, get_normal_prompt
 
 from langchain.chat_models import ChatOpenAI
@@ -13,6 +13,7 @@ from langchain.schema import StrOutputParser
 
 from langchain.retrievers import ParentDocumentRetriever
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores.chroma import Chroma
 from langchain.storage import LocalFileStore
 from langchain.storage._lc_store import create_kv_docstore
 
@@ -21,10 +22,10 @@ from workspace.mdLoader import BaseDBLoader
 from datetime import datetime
 
 #api key settings
-os.environ["OPENAI_API_KEY"] = openai_api_key
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 class RAGPipeline:
-    def __init__(self, model, vectorstore, embedding):
+    def __init__(self, model, vectorstore:Chroma, embedding):
         self.llm = ChatOpenAI(model=model, temperature=0.1, streaming=True)
         self.vectorstore = vectorstore
         self.embedding = embedding
@@ -41,7 +42,7 @@ class RAGPipeline:
         child_splitter = RecursiveCharacterTextSplitter(
             # separators=["\n\n", "\n", " ", ""],
             separators=["\n\n",],
-            chunk_size=200,
+            chunk_size=512,
             chunk_overlap=10,
             is_separator_regex=False,
         )
@@ -55,8 +56,8 @@ class RAGPipeline:
             vectorstore=vectorstore,
             docstore=store,
             child_splitter=child_splitter,
-            search_type="similarity_score_threshold", 
-            search_kwargs={"score_threshold":0.1, "k":5},
+            search_type="similarity_score_threshold",   
+            search_kwargs={"score_threshold":0.5, "k":5},
         )
         ## check cachefile exsists 
         if not list(store.yield_keys()) :
@@ -64,9 +65,9 @@ class RAGPipeline:
             self.parent_retreiver.add_documents(dbloader.load(is_split=False, is_regex=True))
         # BM25 Retriever
         self.bm25_retriever = BM25Retriever.from_documents(documents=self.documents)
-        self.bm25_retriever.k = 5
+        self.bm25_retriever.k = 1
         # Ensemble
-        self.ensemble_retriever = EnsembleRetriever(retrievers=[self.bm25_retriever, self.parent_retreiver], weights=[0.3, 0.7])
+        self.ensemble_retriever = EnsembleRetriever(retrievers=[self.bm25_retriever, self.parent_retreiver], weights=[0.1, 0.9])
         # RAG Chain
         self.rag_chain = (
             {"context": self.ensemble_retriever | self.format_docs, "question": RunnablePassthrough()}
@@ -89,12 +90,17 @@ class RAGPipeline:
 
             displayed_text = " ".join(content_splitted[1:])[:300]
             displayed_text = re.sub('\n+', ' ', displayed_text)
-            # if len(displayed_text) > 300:
-            #     displayed_text = displayed_text[297]+' ...'
             displayed_text += " ..."
+            
+            
+            if metadata.get('url') is not None :
+                url = f"""<a href="{metadata['url']}">{metadata['title']}</a>"""
+            else :
+                url = metadata['title']
 
-            content = f"[{metadata['title']}]\n\n {displayed_text}"
-            formatted_document = content + f"\n\n {metadata['tag']}"
+            # unsafe_allow_html=True,
+            content = f"[{url}]\n\n> 내용 \n\n{displayed_text}"
+            formatted_document = content + f"\n\n> 카테고리\n\n {metadata['tag']}"
             #### metadata 붙인거 추가하기.......
             result.append(formatted_document)
         
@@ -105,6 +111,7 @@ class RAGPipeline:
         return result
     
     def retrieve(self, query):
+        # query = self.embedding.embed_query(query)
         result = self.ensemble_retriever.get_relevant_documents(query)
         return result
 """ ref
@@ -135,25 +142,4 @@ if __name__ == "__main__":
     print(len(retrieval_result))
     end_time = datetime.now()
     print((end_time-start_time).total_seconds(),"seconds.") ### timecheck 11-26:
-
-###### 시간복잡도 Issue로 HyDE 일단 보류했음. 정확도 측면 제대로 평가하면 쓸 생각.
-## embedding config - HyDE
-# hyde_prompt_template = """ 
-#     Write a passage in Korean to answer the #question in detail.
-
-#     #question : {question}
-#     #passage : ...
-# """
-
-# hyde_prompt = PromptTemplate(input_variables=["question"], template=hyde_prompt_template)
-
-# hyde_generation_chain = LLMChain(
-#     llm=llm, 
-#     prompt=hyde_prompt,
-# )
-
-# hydeembeddings = HypotheticalDocumentEmbedder(
-#     llm_chain=hyde_generation_chain,
-#     base_embeddings=embedding,
-# )
 

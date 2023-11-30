@@ -104,10 +104,12 @@ def main() :
         st.markdown("### 관련 문서")  
     ##### VECTORSTORE CONFIG
     vectorstore = vectorstore_config()
-    #ON Button Event
-    if query and search_button:
-        pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
 
+    ##### stream test
+    pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
+    
+    #ON Button Event
+    if query or search_button:
         invoke_empty.markdown("실행 중 ... ")
         with ThreadPoolExecutor() as executor:
             future_invoke = executor.submit(run_pipeline_task, query, pipeline.invoke)
