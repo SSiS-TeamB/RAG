@@ -1,4 +1,6 @@
-# SSiS 검색엔진 개선 ver.
+![logo](/image/bluebird.png)
+
+# SSiS 검색엔진 개선ver (TEAM BlueBird)
 
 ### I. 연구 배경 및 목적
 
