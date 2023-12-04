@@ -5,6 +5,8 @@ from PIL import Image
 # from chromaClient import ChromaClient
 from chromaVectorStore import ChromaVectorStore
 from rag import RAGPipeline
+import math
+
 
 
 st.set_page_config(layout='wide')
@@ -60,7 +62,7 @@ with con3:
 if query_text or btn_flag:
     # semantic_search using "chromadb" module
     # results = chroma_client.semantic_search([query_text], 3)
-
+    start = time.time
  
 
     
@@ -83,6 +85,9 @@ if query_text or btn_flag:
             if results_vs:
                 pass
             status.update(label="검색 완료!", state="complete", expanded=False)
+            end = time.time
+            sec = f"{end-start:.3f} 초"
+            st.write(sec)
         # progress bar
         # progress_text = f'Finding about "{query_text}"...'
         # my_bar = st.progress(0, text=progress_text)
