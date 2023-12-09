@@ -3,6 +3,7 @@ workspace/settings.py
 
 BM-K
 da_finetune_epoch_2
+Seed_100_tok_epoch_8_final
 chroma_storage
 .ipynb_checkpoints
 __pycache__
@@ -10,6 +11,7 @@ __pycache__
 ## test file
 Test.ipynb
 dbtest.ipynb
+for_test
 
 ### pycache
 workspace/BM-K

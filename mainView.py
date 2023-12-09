@@ -70,13 +70,15 @@ if query_text or btn_flag:
         # st.subheader('검색 결과')
         st.markdown("<h2 style='text-align: center; color: white;'>검색 결과</h2>", unsafe_allow_html=True)
 
-    # with con5:
-    #     st.write(results)
+    with con5:
+        st.write(vector_store.show_full(results_vs[0]))
 
-    # with con6:
-    #     st.write(results_vs)
+    with con6:
+        st.write(vector_store.show_full(results_vs[1]))
 
-    with con7:
-        st.write(results_vs)
+    # with con7:
+    #     for ans in results_vs:
+    #         st.write(vector_store.show_full(ans))
+    #         st.write('+++++'*30)
 
 
