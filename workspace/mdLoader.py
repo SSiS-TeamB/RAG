@@ -43,7 +43,7 @@ class BaseDBLoader:
             doc_list = directory_loader.load()
 
             if is_regex:
-                doc_list = self._result_to_regex(doc_list)            
+                doc_list = self._result_to_regex(doc_list)
             if is_split:
                 doc_list = self.text_splitter.split_documents(doc_list)
             self.storage.extend(doc_list)

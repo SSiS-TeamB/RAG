@@ -24,6 +24,7 @@ class ChromaVectorStore:
         # ans2 = self.vs.max_marginal_relevance_search(query, k=10, where_document={'$contains': '대한민국'})
         # ans2 = self.vs.max_marginal_relevance_search(query, k=10, filter={'source': {"$eq": 'markdowndb\\04_청소년•청년_지원\\04_청소년_국제교류.md'}})
         # $gt, $gte, $lt, $lte, $ne, $eq, $in, $nin
+        # where: {"$and": ["name": {"$eq": "John Doe"}, "age": {"$gte": 30}]}
         return [ans1, ans2]
 
     def load_docs(self, per_dir_path:str, model_name:str = "BM-K/KoSimCSE-roberta-multitask"):
