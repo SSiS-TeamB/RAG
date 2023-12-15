@@ -17,6 +17,7 @@ workspace/BM-K
 workspace/__pycache__
 workspace/markdownDB
 workspace/chroma_storage
+workspace/document.pkl
 
 #### util
 embedding.py

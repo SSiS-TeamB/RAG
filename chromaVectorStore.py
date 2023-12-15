@@ -2,6 +2,10 @@ import torch
 from langchain.vectorstores import Chroma
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings as STE
 import re
+import pickle
+
+from langchain.retrievers import BM25Retriever, EnsembleRetriever
+
 
 from workspace.mdLoader import BaseDBLoader
 
@@ -11,8 +15,8 @@ class ChromaVectorStore:
     def __init__(self, **kwargs) -> None:
         emb_info_dict = {'model_name': kwargs.pop('model_name'), 'model_kwargs': {'device': "cuda" if torch.cuda.is_available() else "cpu"},
 'encode_kwargs': {'normalize_embeddings': True}}
-        emb = STE(**emb_info_dict)
-        kwargs['embedding_function'] = emb
+        self.emb = STE(**emb_info_dict)
+        kwargs['embedding_function'] = self.emb
 
         self.vs = Chroma(**kwargs)
         self.retriever = self.vs.as_retriever(search_type='mmr', search_kwargs={'k':5})
@@ -87,3 +91,15 @@ class ChromaVectorStore:
             result.append(formatted_document)
         
         return sep_str.join(doc for doc in result)
+
+
+class EnsembleRetrieverWithFilter(ChromaVectorStore):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        
+        with open('workspace/document.pkl', 'rb') as file:
+            self.documents = pickle.load(file)
+
+        self.bm25_retriever = BM25Retriever.from_documents(documents=self.documents)
+        self.bm25_retriever.k = 1
+        self.ensemble_retriever = EnsembleRetriever(retrievers=[self.bm25_retriever, self.retriever], weights=[0.1, 0.9])
