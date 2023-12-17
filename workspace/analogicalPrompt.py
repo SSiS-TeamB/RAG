@@ -35,9 +35,10 @@ def generateAnalogicalPrompt() -> PipelinePromptTemplate:
 
 def get_normal_prompt() -> PromptTemplate:    
     """ get normal RAG template -> context : query(question). """
+    #Based on {context} and {question} below, You have to respond to the welfare system that users need.
     prompt_template = PromptTemplate.from_template("""
-    You are an expert on welfare system. 
-    Please respond to people's questions based on the following information. 
+    You are an expert on welfare system.
+    Please respond to people's questions based on the following information.
     Your answer should be kind, detailed, and informative, especially for those unfamiliar with the system. 
     The format for documents and questions is as follows:
 
