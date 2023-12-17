@@ -12,7 +12,7 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema import StrOutputParser
 
 from langchain.retrievers import ParentDocumentRetriever
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter, SentenceTransformersTokenTextSplitter
 from langchain.vectorstores.chroma import Chroma
 from langchain.storage import LocalFileStore
 from langchain.storage._lc_store import create_kv_docstore
@@ -20,6 +20,8 @@ from langchain.storage._lc_store import create_kv_docstore
 from chromaVectorStore import ChromaVectorStore
 from workspace.mdLoader import BaseDBLoader 
 from datetime import datetime
+
+from transformers import AutoTokenizer
 
 #api key settings
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
@@ -39,12 +41,11 @@ class RAGPipeline:
         with open('workspace/document.pkl', 'rb') as file:
             self.documents = pickle.load(file)
 
-        child_splitter = RecursiveCharacterTextSplitter(
-            # separators=["\n\n", "\n", " ", ""],
-            separators=["\n\n",],
-            chunk_size=512,
+        child_splitter = SentenceTransformersTokenTextSplitter(
+            tokens_per_chunk=128,
+            model_name="workspace/model/jhgan_seed_777_lr_1e-5_final",
+            # model_name="workspace/model/dadt_epoch2_kha_tok",
             chunk_overlap=10,
-            is_separator_regex=False,
         )
 
         #### encode cachefile into byte(to use ParentDocumentRetriever)
@@ -57,12 +58,13 @@ class RAGPipeline:
             docstore=store,
             child_splitter=child_splitter,
             search_type="similarity_score_threshold",   
-            search_kwargs={"score_threshold":0.5, "k":6},
+            search_kwargs={"score_threshold":0.5, "k":5},
         )
         ## check cachefile exsists 
         if not list(store.yield_keys()) :
             dbloader = BaseDBLoader(path_db="workspace/markdownDB/")
             self.parent_retreiver.add_documents(dbloader.load(is_split=False, is_regex=True))
+            
         # BM25 Retriever
         self.bm25_retriever = BM25Retriever.from_documents(documents=self.documents)
         self.bm25_retriever.k = 1
@@ -75,6 +77,12 @@ class RAGPipeline:
             | self.llm
             | StrOutputParser()
         )
+
+    # $$$ BM25 parsing
+    def bm_parse(self, text:str) -> list[str]:
+        tokenizer_base = AutoTokenizer.from_pretrained("workspace/model/dadt_epoch2_kha_tok")
+        tokenized_list = [tok.replace("##", "") for tok in tokenizer_base.tokenize(text)]
+        return tokenized_list
 
     @staticmethod
     def format_docs(docs):

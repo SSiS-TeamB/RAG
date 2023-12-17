@@ -11,7 +11,7 @@ import os
 class ChromaVectorStore:
     def __init__(self, **kwargs) -> None:
         #일단 임시로
-        self.emb = EmbeddingLoader(model_name="workspace/model/dadt_epoch2_kha_tok", encode_kwargs = {'normalize_embeddings': True}).load()
+        self.emb = EmbeddingLoader(model_name="workspace/model/jhgan_seed_777_lr_1e-5_final", encode_kwargs = {'normalize_embeddings': True}).load()
         kwargs['embedding_function'] = self.emb
         self.vs = Chroma(**kwargs)
         self.vs_dir_path = kwargs['persist_directory']

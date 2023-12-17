@@ -17,7 +17,7 @@ from datetime import datetime
 class BaseDBLoader:
     """markdownDB folder에서 불러온 다음에 폴더별로 내부에 있는 내용 Load해서 Split하고 저장함"""
 
-    def __init__(self, path_db: str, loader_cls=UnstructuredMarkdownLoader):
+    def _init_(self, path_db: str, loader_cls=UnstructuredMarkdownLoader):
         #timecheck
         start_time = datetime.now()
         # textsplitter config
@@ -56,10 +56,10 @@ class BaseDBLoader:
             directory_loader = DirectoryLoader(path=db_folder_abs, loader_cls=self.loader_cls, show_progress=show_progress, use_multithreading=use_multithreading)
             doc_list = directory_loader.load()
 
-            doc_list = self.__process_document_metadata(doc_list)
+            doc_list = self._process_document_metadata(doc_list)
 
             if is_regex:
-                doc_list = self.__result_to_regex(doc_list)            
+                doc_list = self._result_to_regex(doc_list)            
             if is_split:
                 doc_list = self.child_splitter.split_documents(doc_list)
 
@@ -71,7 +71,7 @@ class BaseDBLoader:
 
         return self.storage
 
-    def __result_to_regex(self, doc_list:list[Document]) -> list[Document]:
+    def _result_to_regex(self, doc_list:list[Document]) -> list[Document]:
         """regex splitter (Document)"""
         regex = '([^가-힣0-9a-zA-Z.,·•%↓()\s\\\])'
         result = []
@@ -82,41 +82,52 @@ class BaseDBLoader:
         return result
 
     ##### metadata edit methods
-    def __read_tag_file(self, file_path):
+    def _read_tag_file(self, file_path):
         with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
     
-    def __read_url_table(self, file_path):
+    def _read_url_table(self, file_path):
         return pd.read_csv(file_path, header=0, index_col=0)
 
-    def __replace_metadata(self, metafilename:str, replacer:dict={"_":" ", "•":"·"})->str:
+    def _replace_metadata(self, metafilename:str, replacer:dict={"_":" ", "•":"·"})->str:
         for key, value in replacer.items():
             metafilename = metafilename.replace(key, value)
         return metafilename
 
-    def __strip_replace_text(self, s: str)->str:
+    def _strip_replace_text(self, s: str)->str:
         regex = '([^가-힣0-9a-zA-Z.,·•%↓()\s\\\])'
         s = re.sub(pattern=regex, repl="", string=s)
-        s = self.__replace_metadata(metafilename=s, replacer={" ":"", '•':'·', 'Ⅰ':'', 'Ⅱ':'', "_":""})
+        s = self._replace_metadata(metafilename=s, replacer={" ":"", '•':'·', 'Ⅰ':'', 'Ⅱ':'', "_":""})
         return s
     
-    def __process_document_metadata(self, documents:list)->list:
+    def _get_category_from_source(self, source:str)->str:
+        """get category from Document object metadata['source'] and parse directory(for category use.)"""
+        parsed_source = source.split("\\")
+        dir_source = parsed_source[-2]
+        return self._replace_metadata(dir_source)
+    
+    def _process_document_metadata(self, documents:list)->list:
         """get metadata edit internal methods and integrate all. """
-        metadata_json = self.__read_tag_file("workspace/metadata.json")
-        url_table = self.__read_url_table("workspace/url_table.csv")
+        metadata_json = self._read_tag_file("workspace/metadata.json")
+        url_table = self._read_url_table("workspace/url_table.csv")
 
         for document in documents:
-            #### title
+            #### get source from Document metadata
             meta_source = document.metadata["source"]
-            meta_source_parsed = meta_source.split("\\")[-1]
-            meta_source_parsed_get = meta_source_parsed[3:-3]
+            meta_source_parsed = meta_source.split("\\")
+            
+            #### category
+            document.metadata["category"] = self._get_category_from_source(meta_source)
 
-            result = self.__replace_metadata(metafilename=meta_source_parsed_get)
+            #### title
+            meta_source_parsed_file_name = meta_source_parsed[-1]
+            meta_source_parsed_get = meta_source_parsed_file_name[3:-3]
+            result = self._replace_metadata(metafilename=meta_source_parsed_get)
             document.metadata["title"] = result
             
             #### tag
             title = document.page_content.split("\n")[0]
-            title_parsed = self.__strip_replace_text(title)
+            title_parsed = self._strip_replace_text(title)
             document.metadata["tag"] = metadata_json[title_parsed]
 
             #### url
