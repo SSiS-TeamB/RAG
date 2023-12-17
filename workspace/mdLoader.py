@@ -17,7 +17,7 @@ from datetime import datetime
 class BaseDBLoader:
     """markdownDB folder에서 불러온 다음에 폴더별로 내부에 있는 내용 Load해서 Split하고 저장함"""
 
-    def _init_(self, path_db: str, loader_cls=UnstructuredMarkdownLoader):
+    def __init__(self, path_db: str, loader_cls=UnstructuredMarkdownLoader):
         #timecheck
         start_time = datetime.now()
         # textsplitter config
@@ -131,7 +131,7 @@ class BaseDBLoader:
             document.metadata["tag"] = metadata_json[title_parsed]
 
             #### url
-            result = url_table.loc[url_table["source"] == meta_source_parsed]["url"].values[0]
+            result = url_table.loc[url_table["source"] == meta_source_parsed_file_name]["url"].values[0]
 
             if result is np.nan :
                 document.metadata["url"] = ""
