@@ -27,10 +27,13 @@ from transformers import AutoTokenizer
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 class RAGPipeline:
-    def __init__(self, model, vectorstore:Chroma, embedding):
+    def __init__(self, model, vectorstore:Chroma, embedding, filter_dict):
         self.llm = ChatOpenAI(model=model, temperature=0.1, streaming=True)
         self.vectorstore = vectorstore
         self.embedding = embedding
+        self.filter_dict = filter_dict
+
+        self.tokenizer_base = AutoTokenizer.from_pretrained("workspace/model/jhgan_seed_777_lr_1e-5_final")
         
         save_path = "workspace/document.pkl"
         if not os.path.exists(save_path) :
@@ -63,11 +66,17 @@ class RAGPipeline:
         ## check cachefile exsists 
         if not list(store.yield_keys()) :
             dbloader = BaseDBLoader(path_db="workspace/markdownDB/")
-            self.parent_retreiver.add_documents(dbloader.load(is_split=False, is_regex=True))
-            
+            self.parent_retreiver.add_documents(dbloader.load(is_split=True, is_regex=True))
+        
         # BM25 Retriever
-        self.bm25_retriever = BM25Retriever.from_documents(documents=self.documents)
-        self.bm25_retriever.k = 1
+        if "category" in self.filter_dict:
+            filtered_docs = [d for d in self.documents if d.metadata["category"] == self.filter_dict["category"]["$eq"]]
+        else:
+            filtered_docs = [d for d in self.documents if d.metadata["category"] in [e['category']['$eq'] for e in self.filter_dict['$or']]]
+        
+        self.bm25_retriever = BM25Retriever.from_documents(documents=filtered_docs, preprocess_func=self.bm_parse)
+        # self.bm25_retriever = BM25Retriever.from_documents(documents=self.documents, preprocess_func=self.bm_parse)
+        self.bm25_retriever.k = 3
         # Ensemble
         self.ensemble_retriever = EnsembleRetriever(retrievers=[self.bm25_retriever, self.parent_retreiver], weights=[0.1, 0.9])
         # RAG Chain
@@ -80,8 +89,8 @@ class RAGPipeline:
 
     # $$$ BM25 parsing
     def bm_parse(self, text:str) -> list[str]:
-        tokenizer_base = AutoTokenizer.from_pretrained("workspace/model/dadt_epoch2_kha_tok")
-        tokenized_list = [tok.replace("##", "") for tok in tokenizer_base.tokenize(text)]
+        # tokenizer_base = AutoTokenizer.from_pretrained("workspace/model/dadt_epoch2_kha_tok")
+        tokenized_list = [tok.replace("##", "") for tok in self.tokenizer_base.tokenize(text)]
         return tokenized_list
 
     @staticmethod
@@ -108,7 +117,7 @@ class RAGPipeline:
 
             # unsafe_allow_html=True,
             content = f"[{url}]\n\n> 내용 \n\n{displayed_text}"
-            formatted_document = content + f"\n\n> 카테고리\n\n {metadata['tag']}"
+            formatted_document = content + f"\n\n> 카테고리\n\n {metadata['tag']} \n\n 주제: {metadata['category']}"
             #### metadata 붙인거 추가하기.......
             result.append(formatted_document)
         
@@ -120,6 +129,7 @@ class RAGPipeline:
     
     def retrieve(self, query):
         # query = self.embedding.embed_query(query)
+        self.ensemble_retriever.retrievers[1].search_kwargs['filter'] = self.filter_dict
         result = self.ensemble_retriever.get_relevant_documents(query)
         return result
 """ ref

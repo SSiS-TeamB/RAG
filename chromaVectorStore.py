@@ -58,7 +58,7 @@ class ChromaVectorStore:
 
         doc_loader = BaseDBLoader(document_path)
         docs = doc_loader.load(is_split, is_regex)
-        self.get_pickle(documents=docs, save_path=document_path) #get pickle file -> to Initiate BM25 Search and Save time, save list of Documents
+        # self.get_pickle(documents=docs, save_path=document_path) #get pickle file -> to Initiate BM25 Search and Save time, save list of Documents
 
         vectorstore = Chroma.from_documents(documents=docs, embedding=self.emb, collection_name=self.vs_coll_name, persist_directory=self.vs_dir_path)
         vectorstore.persist()
@@ -77,5 +77,6 @@ if __name__ == "__main__":
         "collection_metadata" : {"hnsw:space":"cosine"}
     })
 
+    vectorstore.load_docs(document_path="workspace/markdownDB")
     ### 일단 document split 없이 빈 collection 만들고 ParentdocumentRetriever에서 사용함.
 

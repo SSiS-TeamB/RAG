@@ -44,7 +44,12 @@ def page_config():
     st.subheader("", divider='blue')
     #Query example for user
     st.subheader("📌이렇게 검색해보세요!")
-    st.info('예시: "20대 취업관련 제도"')
+    st.info('''
+            예시)
+            ❓"대학생인데 학자금 대출 말고도 금전적인 지원을 받을 수 있는 방법이 있나요?"\n
+            ❓"노인 분들이 문화생활을 즐길 수 있는 공간으로, 어떤 시설이 있는지 궁금해요."\n
+            ❓"우리 집이 최근 화재로 인해 살 곳을 잃었어요. 긴급하게 지원받을 수 있는 방법이 있을까요?"
+            ''')
 
     return
 
@@ -91,6 +96,37 @@ def main() :
         query = st.text_input("Search Bar", placeholder="검색어를 입력하세요.", label_visibility="hidden")
         search_button = st.button(search_name, use_container_width=True)
         st.divider()
+    
+
+    # 필터링
+    category_list = ["01 생계 지원", "02 취업 지원", "03 임신·보육 지원", "04 청소년·청년 지원", "05 보건의료 지원", "06 노령층 지원", "07 장애인 지원", "08 보훈대상자 지원", "09 법률·금융 복지 지원", "10 기타 위기별·상황별 지원"]
+    filter_len = len(category_list)
+    chk_idxes = [True]*filter_len
+    meta_filter = st.container()
+    with meta_filter:
+        st.subheader("⚙️필터 적용")
+        with st.expander("주제 선택"):
+            for i in range(filter_len):
+                chk_idxes[i] = st.checkbox(f'{category_list[i]}', value=True)
+        st.write("")
+    # filter_dict={'title': {"$eq": '내일이룸학교'}}
+    # filter_dict = {"$or": [{"title": {"$eq": "내일이룸학교"}}, {"title": {"$eq": "일학습병행제"}}]}
+    filter_dict = {}
+    chk_num = sum(chk_idxes)
+    if chk_num == 0:
+        st.warning("카테고리를 1개 이상 선택해주세요!", icon="⚠️")
+        return
+    elif chk_num == 1:
+        for i in range(filter_len):
+            if chk_idxes[i]:
+                filter_dict["category"] = {"$eq": category_list[i]}
+                break
+    else:
+        filter_dict["$or"] = []
+        for i in range(filter_len):
+            if chk_idxes[i]:
+                filter_dict["$or"].append({"category": {"$eq": category_list[i]}})
+
     ##### METHOD RESULT CONTAINER
     #invoke container
     invoke_container = st.container()
@@ -106,7 +142,7 @@ def main() :
     vectorstore = vectorstore_config()
 
     ##### stream test
-    pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model)
+    pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model, filter_dict=filter_dict)
     
     #ON Button Event
     if query or search_button:
