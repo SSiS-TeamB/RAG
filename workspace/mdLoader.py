@@ -9,7 +9,7 @@ import numpy as np
 import json
 
 from langchain.document_loaders import DirectoryLoader, UnstructuredMarkdownLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter, SentenceTransformersTokenTextSplitter
 from langchain.schema.document import Document
 
 from datetime import datetime
@@ -21,11 +21,11 @@ class BaseDBLoader:
         #timecheck
         start_time = datetime.now()
         # textsplitter config
-        self.text_splitter = RecursiveCharacterTextSplitter(
-            separators=["\n\n", "\n", " ", ""],
-            chunk_size=200,
+        self.child_splitter = SentenceTransformersTokenTextSplitter(
+            tokens_per_chunk=128,
+            model_name="workspace/model/jhgan_seed_777_lr_1e-5_final",
+            # model_name="workspace/model/dadt_epoch2_kha_tok",
             chunk_overlap=10,
-            is_separator_regex=False,
         )
 
         # loaderclass config
@@ -56,15 +56,14 @@ class BaseDBLoader:
             directory_loader = DirectoryLoader(path=db_folder_abs, loader_cls=self.loader_cls, show_progress=show_progress, use_multithreading=use_multithreading)
             doc_list = directory_loader.load()
 
+            doc_list = self.__process_document_metadata(doc_list)
+
             if is_regex:
                 doc_list = self.__result_to_regex(doc_list)            
             if is_split:
-                doc_list = self.text_splitter.split_documents(doc_list)
+                doc_list = self.child_splitter.split_documents(doc_list)
+
             self.storage.extend(doc_list)
-        
-############################################################## 11-27 metadata edit
-        # metadata edit
-        self.storage = self.__process_document_metadata(self.storage)
 
         #timecheck
         end_time = datetime.now()
