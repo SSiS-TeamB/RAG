@@ -109,7 +109,7 @@ def main() :
             for i in range(filter_len):
                 chk_idxes[i] = st.checkbox(f'{category_list[i]}', value=True)
         st.write("")
-    # filter_dict={'title': {"$eq": '내일이룸학교'}}
+    # filter_dict={'category': {"$eq": '02 취업 지원'}}
     # filter_dict = {"$or": [{"title": {"$eq": "내일이룸학교"}}, {"title": {"$eq": "일학습병행제"}}]}
     filter_dict = {}
     chk_num = sum(chk_idxes)
@@ -128,7 +128,7 @@ def main() :
                 filter_dict["$or"].append({"category": {"$eq": category_list[i]}})
 
     ##### METHOD RESULT CONTAINER
-    #invoke container
+    # invoke container
     invoke_container = st.container()
     with invoke_container:
         st.markdown("### 생성된 답변")
@@ -146,11 +146,12 @@ def main() :
     
     #ON Button Event
     if query or search_button:
-        invoke_empty.markdown("실행 중 ... ")
+        # invoke_empty.markdown("실행 중 ... ")
         with ThreadPoolExecutor() as executor:
             future_invoke = executor.submit(run_pipeline_task, query, pipeline.invoke)
             future_retrieve = executor.submit(run_pipeline_task, query, pipeline.retrieve)
             futures = {future_invoke: 'Invoke', future_retrieve: 'Retrieve'}
+            # futures = {future_retrieve: 'Retrieve'}
 
             for future in as_completed(futures):
                 task_name = futures[future]
@@ -159,9 +160,19 @@ def main() :
                 if task_name == 'Invoke':
                     invoke_empty.empty()
                     invoke_empty.markdown(f'{result} \n\n 실행 시간: {elapsed_time:.2f}초', unsafe_allow_html=True)
+                    pass
                 else:
                     empty = retrieve_container.empty()
-                    empty.markdown(f'{RAGPipeline.format_docs(result)} \n\n 실행 시간: {elapsed_time:.2f}초', unsafe_allow_html=True)
+                    relavant_docs_list = RAGPipeline.format_docs(result).split("\n***\n")
+                    # empty.markdown(relavant_docs_list, unsafe_allow_html=True)
+                    with empty.container():
+                        for f_doc in relavant_docs_list:
+                            h, c, t = f_doc.split("$$$")
+                            st.markdown(h, unsafe_allow_html=True)
+                            st.write({"상세보기": c})
+                            st.markdown(t, unsafe_allow_html=True)
+                            st.divider()
+                        st.write(f'실행 시간: {elapsed_time:.2f}초')
 
             # for t in executor._threads:
             #     add_script_run_ctx(t)

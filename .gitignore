@@ -1,12 +1,17 @@
 ### api key
 workspace/settings.py
+
 ### model
 workspace/model
-### __pycache__
+
+### cache
+cache
 __pycache__
 workspace/__pycache__
+
 ### chromastorage
 workspace/chroma_storage
+
 ### document pickle file
 workspace/document.pkl
 
