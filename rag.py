@@ -29,6 +29,8 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 class RAGPipeline:
     def __init__(self, model, vectorstore:Chroma, embedding, filter_dict):
+        print("RAGPipeline 새로 만들고있음!!!!!!")
+        
         self.llm = ChatOpenAI(model=model, temperature=0.1, streaming=True)
         self.vectorstore = vectorstore
         self.embedding = embedding
@@ -62,8 +64,10 @@ class RAGPipeline:
             docstore=store,
             child_splitter=child_splitter,
             search_type="similarity_score_threshold",   
-            search_kwargs={"score_threshold":0.1, "k":7},
+            search_kwargs={"k":7},
+            # search_kwargs={"score_threshold":0, "k":7},
         )
+
         ## check cachefile exsists 
         if not list(store.yield_keys()) :
             dbloader = BaseDBLoader(path_db="workspace/markdownDB/")
@@ -78,8 +82,10 @@ class RAGPipeline:
             self.bm25_retriever = BM25Retriever.from_documents(documents=filtered_docs, preprocess_func=self.bm_parse)
         else:
             self.bm25_retriever = BM25Retriever.from_documents(documents=self.documents, preprocess_func=self.bm_parse)
-        
         self.bm25_retriever.k = 2
+
+        # self.bm25_retriever = BM25Retriever.from_documents(documents=self.documents, preprocess_func=self.bm_parse)
+
         # Ensemble
         self.ensemble_retriever = EnsembleRetriever(retrievers=[self.bm25_retriever, self.parent_retreiver], weights=[0.1, 0.9])
         # RAG Chain
@@ -167,8 +173,9 @@ class RAGPipeline:
     
     def retrieve(self, query):
         # query = self.embedding.embed_query(query)
+        # result = self.ensemble_retriever.get_relevant_documents(query)
         self.ensemble_retriever.retrievers[1].search_kwargs['filter'] = self.filter_dict
-        result = self.ensemble_retriever.get_relevant_documents(query)
+        result = self.ensemble_retriever.retrievers[1].get_relevant_documents(query)
         return result
 """ ref
 https://python.langchain.com/docs/use_cases/question_answering/vector_db_qa
@@ -191,11 +198,14 @@ if __name__ == "__main__":
 
     model = "gpt-3.5-turbo-1106"
     # model = "gpt-4-1106-preview"
-    rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model, filter_dict={'category': {"$eq": '02 취업 지원'}})
 
-    retrieval_result = rag_pipeline.retrieve("20대 취업")
-    print(retrieval_result)
-    print(len(retrieval_result))
+    filter_dict={'category': {"$eq": '10 기타 위기별·상황별 지원'}}
+
+    rag_pipeline = RAGPipeline(vectorstore=vectorstore.vs, embedding=vectorstore.emb, model=model, filter_dict=filter_dict)
+
+    retrieval_result = rag_pipeline.retrieve("주택 공급")
+    # print(retrieval_result)
+    # print(len(retrieval_result))
     end_time = datetime.now()
-    print((end_time-start_time).total_seconds(),"seconds.") ### timecheck 11-26:
+    # print((end_time-start_time).total_seconds(),"seconds.") ### timecheck 11-26:
 

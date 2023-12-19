@@ -38,18 +38,31 @@ def get_normal_prompt() -> PromptTemplate:
     prompt_template = PromptTemplate.from_template("""
     You are an expert on welfare system. 
     Please respond to people's questions based on the following information. 
-    Your answer should be kind, detailed, and informative, especially for those unfamiliar with the system. 
+    Your answer should be kind, detailed, and informative, especially for those unfamiliar with the system.
+    And I recommend to refer to many documents and answer comprehensively.
     The format for documents and questions is as follows:
 
     context below here :
+    'point 1'
     {context}
+    'point 2'
     ==============================================================
     Question:
     {question}
-                                                   
-    The answer must be written solely in Korean.
-    return answer only.""")
 
+    ==============================================================
+    documents are between 'point 1' and 'point 2'. title appears before '내용'.
+                                                                                            
+    The answer must be written solely in Korean.
+    return answer and titles of all documents.
+    in any case, must return anwer and titles at the bottom. in format 'answer \n\n 참고 문서: [title1, titles2,,,]'.
+    if you refer to only one document, should tell me the reason why you refer to only the document and doesn't refer to other documents.
+    (remember! tell me the reason only if you refer to only one document.)
+    
+    """)
+    # ==============================================================
+    # The answer must be written solely in Korean.
+    # return answer only.""")
     return prompt_template
 
 ## test 

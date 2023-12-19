@@ -64,7 +64,6 @@ def vectorstore_config():
     "persist_directory":persist_directory,
     "collection_metadata" : {"hnsw:space":"cosine"}
     })
-
     return vectorstore
 
 def main() :
@@ -146,7 +145,7 @@ def main() :
     
     #ON Button Event
     if query or search_button:
-        # invoke_empty.markdown("실행 중 ... ")
+        invoke_empty.markdown("실행 중 ... ")
         with ThreadPoolExecutor() as executor:
             future_invoke = executor.submit(run_pipeline_task, query, pipeline.invoke)
             future_retrieve = executor.submit(run_pipeline_task, query, pipeline.retrieve)
@@ -159,7 +158,8 @@ def main() :
 
                 if task_name == 'Invoke':
                     invoke_empty.empty()
-                    invoke_empty.markdown(f'{result} \n\n 실행 시간: {elapsed_time:.2f}초', unsafe_allow_html=True)
+                    invoke_empty.write({"답변 내용": f'{result} \n\n 실행 시간: {elapsed_time:.2f}초'})
+                    # invoke_empty.markdown(f'{result} \n\n 실행 시간: {elapsed_time:.2f}초', unsafe_allow_html=True)
                     pass
                 else:
                     empty = retrieve_container.empty()
