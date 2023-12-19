@@ -158,7 +158,7 @@ def main() :
 
                 if task_name == 'Invoke':
                     invoke_empty.empty()
-                    invoke_empty.write({"답변 내용": f'{result} \n\n 실행 시간: {elapsed_time:.2f}초'})
+                    invoke_empty.write({"답변 내용": f'{result} \n\n실행 시간: {elapsed_time:.2f}초'})
                     # invoke_empty.markdown(f'{result} \n\n 실행 시간: {elapsed_time:.2f}초', unsafe_allow_html=True)
                     pass
                 else:
