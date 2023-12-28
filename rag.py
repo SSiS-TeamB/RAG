@@ -2,7 +2,7 @@ import re
 import os
 import pickle
 import math
-#api key(추가해서 쓰시오)
+# api key(추가해서 쓰시오)
 from workspace.settings import OPENAI_API_KEY
 from workspace.analogicalPrompt import generateAnalogicalPrompt, get_normal_prompt
 
@@ -29,7 +29,7 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 class RAGPipeline:
     def __init__(self, model, vectorstore:Chroma, embedding, filter_dict):
-        print("RAGPipeline 새로 만들고있음!!!!!!")
+        # print("RAGPipeline 새로 만들고있음!!!!!!")
         
         self.llm = ChatOpenAI(model=model, temperature=0.1, streaming=True)
         self.vectorstore = vectorstore
@@ -64,8 +64,8 @@ class RAGPipeline:
             docstore=store,
             child_splitter=child_splitter,
             search_type="similarity_score_threshold",   
-            search_kwargs={"k":7},
-            # search_kwargs={"score_threshold":0, "k":7},
+            # search_kwargs={"k":7},
+            search_kwargs={"score_threshold":0.5, "k":7},
         )
 
         ## check cachefile exsists 
@@ -173,9 +173,9 @@ class RAGPipeline:
     
     def retrieve(self, query):
         # query = self.embedding.embed_query(query)
-        # result = self.ensemble_retriever.get_relevant_documents(query)
         self.ensemble_retriever.retrievers[1].search_kwargs['filter'] = self.filter_dict
-        result = self.ensemble_retriever.retrievers[1].get_relevant_documents(query)
+        # result = self.ensemble_retriever.retrievers[1].get_relevant_documents(query)
+        result = self.ensemble_retriever.get_relevant_documents(query)
         return result
 """ ref
 https://python.langchain.com/docs/use_cases/question_answering/vector_db_qa
