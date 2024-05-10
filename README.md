@@ -77,4 +77,6 @@ return answer only.
 		- 목적은 언제나 간단하게
 		- 짧은 문장을 여러번
 		- 영어를 이용해서 질문하고 답변을 한국어로 바꿔주는 형식
-	
+    
+### Ⅳ. 후속 연구
+- [Korean-Embedding-Model-Performance-Benchmark-for-Retriever](https://github.com/ssisOneTeam/Korean-Embedding-Model-Performance-Benchmark-for-Retriever)
